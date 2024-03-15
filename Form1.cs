@@ -66,52 +66,59 @@ namespace MusicBeePlugin {
         }
 
         private SettingsManager _settingsManager = new SettingsManager();
+        private Multiplayer Multiplayer;
+        private Singleplayer Singleplayer;
+        private ChaseClassic ChaseClassic;
 
+        public int startingPlayer = 1;
+        public int player1Needs = 2;
+        public int player2Needs = 2;
 
-        int startingPlayer = 1;
-        int player1Needs = 2;
-        int player2Needs = 2;
+        public int startTime = 150000; //ms
+        public int timePass1 = 2000; //ms
+        public int timePass2 = 2000; //ms
 
-        int startTime = 150000; //ms
-        int timePass1 = 2000; //ms
-        int timePass2 = 2000; //ms
+        public Color P1Col = Color.Green;
+        public Color P2Col = Color.Blue;
+        public bool showHistory = true;
 
-        Color P1Col = Color.Green;
-        Color P2Col = Color.Blue;
-        bool showHistory = true;
-
-        float AutoPause = 4;
+        public float AutoPause = 4;
 
         //not user changed
-        bool shouldCountTime = false;
-        int timeP1;
-        int timeP2;
+        public bool shouldCountTime = false;
+        public int timeP1;
+        public int timeP2;
         public int P1TimeAtNew;
         public int P2TimeAtNew;
-        int player; //starting player
-        bool GAMEOVER = false;
+        public int player; //starting player
+        public bool GAMEOVER = false;
+
         public bool shouldLoop = true;
         public bool shouldShuffle = true;
-        bool singlePlayer = false;
+        public bool singlePlayer = false;
+        public bool chaseClassic = false;
 
-        Score p1Score = new Score();
-        Score p2Score = new Score();
+        public Score p1Score = new Score();
+        public Score p2Score = new Score();
 
-        Font smallerFont;
-        Font biggerFont;
+        public Font smallerFont;
+        public Font biggerFont;
 
         float[] graph = new float[1000];
         float[] peaks = new float[1000];
         float[] fft = new float[4096];
 
-        bool stupidMode = false;
-        bool quickRounds = true;
-        float quickRoundLength = 2.0f;
+        public bool stupidMode = false;
+        public bool quickRounds = true;
+        public float quickRoundLength = 2.0f;
+
+        public int framesWithAudio = 0;
+
         private Pen pen = new Pen(Color.FromArgb(170, 245, 245, 245), 2); // Change color and width as needed
         Pen transPen = new Pen(Color.FromArgb(170, 0, 0, 0), 4);
         //new Pen(Color.FromArgb(170, 100, 100, 255), 3);
         Bitmap Art;
-        int ticks = 0;
+        public int ticks = 0;
 
         MyListBoxItem currentlyHighlightedItem = null;
         public bool havePaused = false;
@@ -120,6 +127,10 @@ namespace MusicBeePlugin {
 
 
         public void VGMV_Load(object sender, EventArgs e) {
+            Multiplayer = new Multiplayer(this);
+            Singleplayer = new Singleplayer(this);
+            ChaseClassic = new ChaseClassic(this);
+
             InitTimer();
             updateSongSettings();
 
@@ -289,6 +300,8 @@ namespace MusicBeePlugin {
                 singlePlayer = _settingsManager.SinglePlayer;
                 SingePlayerCheckBox.Checked = singlePlayer;
 
+                chaseClassic = _settingsManager.ChaseClassic;
+                chaseClassicB.Checked = chaseClassic;
 
                 if (showHistory) {
                     listBox1.Show();
@@ -310,153 +323,27 @@ namespace MusicBeePlugin {
         }
 
         public void start() {
-            //string startingSong = mApi.NowPlayingList_GetListFileUrl(0); //gets current song
-            //mApi.NowPlayingList_QueueLast(startingSong); //plays the first song last in the queue
-            //TODO:
-            //make loop and repeat automatically update if the setting is changed in MusicBee
-            if (shouldLoop) {
-                mApi.Player_SetRepeat(Plugin.RepeatMode.All); //loop playlist
+            if(!chaseClassic && !singlePlayer) {
+                Multiplayer.start();
             }
-            else {
-                mApi.Player_SetRepeat(Plugin.RepeatMode.None); //dont loop playlist
-            }
-            if (shouldShuffle) {
-                shuffleList();
-
-                mApi.Player_PlayNextTrack(); //play next track (random not first song)
-
-                shuffleList(); //now first song is randomly in there
-            }
-            else {
-                mApi.Player_SetShuffle(false);
-                mApi.Player_SetPosition(0);
-            }
-
-
-            //shuffleList();
-
-            GAMEOVER = false;
-
-            p1Score.reset();
-            p2Score.reset();
-
-            incPoints(0); // to update text
-
-            p1Score.reset();
-            p2Score.reset();
-
-            listBox1.Items.Clear();
-            listBox2.Items.Clear();
-
-            pictureBox3.Visible = false;
-            pictureBox4.Visible = false;
-
-            startTime = (int)(Mins.Value * 60 + Secs.Value) * 1000;
-            timePass1 = (int)(P1IncrementUpDown.Value * 1000);
-            timePass2 = (int)(P2IncrementUpDown.Value * 1000);
-
-            player = startingPlayer;
-
-            //update fonts
-            TimerP1.ForeColor = P1Col;
-            TimerP2.ForeColor = P2Col;
-            Player1Name.ForeColor = P1Col;
-            Player2Name.ForeColor = P2Col;
-
-            if (player == 2) {
-                TimerP1.Font = smallerFont;
-                TimerP2.Font = biggerFont;
-            }
-            else {
-                TimerP2.Font = smallerFont;
-                TimerP1.Font = biggerFont;
-            }
-
-            //set times
-            timeP1 = startTime;
-            timeP2 = startTime;
-            P1TimeAtNew = timeP1;
-            P2TimeAtNew = timeP2;
-            shouldCountTime = true;
-            havePaused = false;
-
-            //show hide stuff
-            ScoreP1.Show();
-            ScoreP2.Show();
-            songName.Hide();
-            panel1.Hide();
-            
-            updateColors();
-            updateTimers();
-            TimerP1.Show();
-            TimerP2.Show();
-            groupBox1.Hide();
-            LosingPlayerLabel.Hide();
-            pictureBox2.Hide();
-            pictureBox5.Hide();
-            Start.Hide();
-            Player1Name.Show();
-            Player2Name.Show();
-
-
-            if (showHistory) {
-                listBox1.Show();
-                listBox2.Show();
-            }
-            else {
-                listBox1.Hide();
-                listBox2.Hide();
-            }
-
-
-            if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
-                mApi.Player_PlayPause(); //unpause if needed
-            }
-
             if (singlePlayer) {
-                listBox2.Hide();
-                ScoreP2.Hide();
-                Player2Name.Hide();
-                TimerP2.Hide();
+                Singleplayer.start();
             }
-            else {
-                if (showHistory) { listBox2.Show(); }
-                ScoreP2.Show();
-                Player2Name.Show();
-                TimerP2.Show();
+            if (chaseClassic) {
+                ChaseClassic.start();
             }
-            framesWithAudio = 0;
-
         }
 
         public void incPoints(int pointGain) {
-            if (player == 1 || singlePlayer) {
-                p1Score.intPoints(pointGain, player1Needs, singlePlayer);
-                if (p1Score._score % player1Needs == 0 && pointGain > 0) {
-                    TimerP1.Font = smallerFont;
-                    TimerP2.Font = biggerFont;
-                    player = 2;
-                    timeP1 += timePass1;
-                }
-
-            }
-            else {
-                p2Score.intPoints(pointGain, player2Needs, singlePlayer);
-                if (p2Score._score % player2Needs == 0 && pointGain > 0) {
-                    TimerP2.Font = smallerFont;
-                    TimerP1.Font = biggerFont;
-                    player = 1;
-                    timeP2 += timePass2;
-                }
+            if(!chaseClassic && !singlePlayer) {
+                Multiplayer.incPoints(pointGain);
             }
             if (singlePlayer) {
-                TimerP1.Font = biggerFont;
+                Singleplayer.incPoints(pointGain);
             }
-            updateText(ScoreP1, p1Score._score.ToString() + "\n(" + (p1Score._score % player1Needs).ToString() + "/" + player1Needs.ToString() + ")");
-            updateText(ScoreP2, p2Score._score.ToString() + "\n(" + (p2Score._score % player2Needs).ToString() + "/" + player2Needs.ToString() + ")");
-            updateTimers();
-            updateColors();
-
+            if (chaseClassic) {
+                ChaseClassic.incPoints(pointGain);
+            }
         }
 
         public void updateTimers() {
@@ -482,13 +369,14 @@ namespace MusicBeePlugin {
             TimerP2.ForeColor = P2Col;
             Player2Name.ForeColor = P2Col;
 
-            if (player == 1 || singlePlayer) {
-                ScoreP1.ForeColor = P1Col;
-                ScoreP2.ForeColor = Color.Black;
+            if (!chaseClassic && !singlePlayer) {
+                Multiplayer.updateColors();
             }
-            else {
-                ScoreP1.ForeColor = Color.Black;
-                ScoreP2.ForeColor = P2Col;
+            if (singlePlayer) {
+                Singleplayer.updateColors();
+            }
+            if (chaseClassic) {
+                ChaseClassic.updateColors();
             }
         }
 
@@ -605,7 +493,6 @@ namespace MusicBeePlugin {
         public void InitTimer() {
             timer1.Start();
         }
-        int framesWithAudio = 0;
         private void timer1_Tick(object sender, EventArgs e) {
             ticks++;
 
@@ -674,41 +561,16 @@ namespace MusicBeePlugin {
                 havePaused = true;
             }
         }
+
         private void gameOverCheck(bool quickEnd) {
-            int A = mApi.Player_GetPosition(); //song playlength in ms
-            //TODO dont count time if the start of the song is silent (until its playing audio duh)
-            if (A <= 700) {
-                A = 0;
+            if (!chaseClassic && !singlePlayer) {
+                Multiplayer.gameOverCheck(quickEnd);
             }
-
-            if ((!GAMEOVER && shouldCountTime && mApi.Player_GetPlayState() == Plugin.PlayState.Playing) || quickEnd) { //if time should move AND song playing,
-
-                if (player == 1 || singlePlayer) { //tick
-                    timeP1 = P1TimeAtNew - A;
-                }
-                else {
-                    timeP2 = P2TimeAtNew - A;
-                }
-                if (timeP1 <= -1000 || timeP2 <= -1000 || quickEnd) {
-                    GAMEOVER = true;
-                    timeP1 = Math.Max(timeP1, 0);
-                    timeP2 = Math.Max(timeP2, 0);
-                    showSong(true);
-                    pictureBox2.Show();
-                    pictureBox5.Show();
-                    LosingPlayerLabel.Show();
-                    if (timeP1 <= 0) {
-                        LosingPlayerLabel.Text = Player1Name.Text + " Lost";
-                    }
-                    else {
-                        LosingPlayerLabel.Text = Player2Name.Text + " Lost";
-                    }
-                    int sumP1 = p1Score._zeroPoint + p1Score._onePoint + p1Score._twoPoint;
-                    int sumP2 = p2Score._zeroPoint + p2Score._onePoint + p2Score._twoPoint;
-                    updateText(ScoreP1, p1Score._score + "\n" + p1Score._twoPoint + "/" + p1Score._onePoint + "/" + p1Score._zeroPoint + " - " + sumP1);
-                    updateText(ScoreP2, p2Score._score + "\n" + p2Score._twoPoint + "/" + p2Score._onePoint + "/" + p2Score._zeroPoint + " - " + sumP2);
-
-                }
+            if (singlePlayer) {
+                Singleplayer.gameOverCheck(quickEnd);
+            }
+            if (chaseClassic) {
+                ChaseClassic.gameOverCheck(quickEnd);
             }
         }
 
@@ -958,16 +820,23 @@ namespace MusicBeePlugin {
         #endregion
 
         public void handleNextSong() {
-            framesWithAudio = 0;
+            if (!GAMEOVER) {
+                framesWithAudio = 0;
 
-            mApi.Player_PlayNextTrack();
-            shouldCountTime = true;
+                mApi.Player_PlayNextTrack();
+                shouldCountTime = true;
 
-            songName.Hide();
-            panel1.Hide();
+                songName.Hide();
+                panel1.Hide();
 
-            P1TimeAtNew = timeP1;
-            P2TimeAtNew = timeP2;
+                P1TimeAtNew = timeP1;
+                P2TimeAtNew = timeP2;
+            }
+
+        }
+
+        public void showMessage(string text) {
+            MessageBox.Show(text, "title", MessageBoxButtons.OK);
         }
 
         public void VGMV_KeyDown(object sender, KeyEventArgs e) {
@@ -1180,6 +1049,9 @@ namespace MusicBeePlugin {
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e) {
             singlePlayer = SingePlayerCheckBox.Checked;
+            if (chaseClassic && singlePlayer) {
+                chaseClassicB.Checked = false;
+            }
             if (singlePlayer) {
                 listBox2.Hide();
                 ScoreP2.Hide();
@@ -1315,6 +1187,16 @@ namespace MusicBeePlugin {
             quickRounds = checkBox1.Checked;
             _settingsManager.QuickRounds = quickRounds;
             _settingsManager.SaveSettings();
+        }
+
+        private void chaseClassicB_CheckedChanged(object sender, EventArgs e) {
+            chaseClassic = chaseClassicB.Checked;
+            if (chaseClassic && singlePlayer) {
+                SingePlayerCheckBox.Checked = false;
+            }
+            _settingsManager.ChaseClassic = chaseClassic;
+            _settingsManager.SaveSettings();
+
         }
     }
 
