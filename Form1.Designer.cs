@@ -79,6 +79,7 @@
             this.Player2Name = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.BufferedPanel();
+            this.chaseClassicB = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -208,7 +209,6 @@
             this.listBox2.MouseClick += listBox2_MouseClick;
             this.listBox2.MouseMove += listBox2_MouseMove;
             this.listBox2.MouseLeave += listBox2_MouseLeave;
-
             // 
             // DisplayHistoryCheckBox
             // 
@@ -227,6 +227,7 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.groupBox1.Controls.Add(this.chaseClassicB);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.numericUpDown2);
@@ -704,7 +705,6 @@
             this.listBox1.MouseClick += listBox1_MouseClick;
             this.listBox1.MouseMove += listBox1_MouseMove;
             this.listBox1.MouseLeave += listBox1_MouseLeave;
-
             // 
             // LosingPlayerLabel
             // 
@@ -797,6 +797,18 @@
             this.panel1.TabIndex = 30;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
+            // chaseClassicB
+            // 
+            this.chaseClassicB.AutoSize = true;
+            this.chaseClassicB.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chaseClassicB.Location = new System.Drawing.Point(499, 257);
+            this.chaseClassicB.Name = "chaseClassicB";
+            this.chaseClassicB.Size = new System.Drawing.Size(142, 26);
+            this.chaseClassicB.TabIndex = 31;
+            this.chaseClassicB.Text = "Chase Classic";
+            this.chaseClassicB.UseVisualStyleBackColor = true;
+            this.chaseClassicB.CheckedChanged += new System.EventHandler(this.chaseClassicB_CheckedChanged);
+            // 
             // VGMV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -846,61 +858,62 @@
         }
 
         #endregion
-        private System.Windows.Forms.TextBox P2NameTextBox;
-        private System.Windows.Forms.Label P2NameSettingsLabel;
-        private System.Windows.Forms.Label Player2Name;
-        private System.Windows.Forms.TextBox P1NameTextBox;
-        private System.Windows.Forms.Label P1NameSettingsLabel;
-        private System.Windows.Forms.Label Player1Name;
-        private System.Windows.Forms.Label songName;
-        private System.Windows.Forms.Button Start;
-        private System.Windows.Forms.Label ScoreP2;
-        private System.Windows.Forms.Label ScoreP1;
-        private System.Windows.Forms.Label TimerP1;
-        private System.Windows.Forms.Label TimerP2;
-        private System.Windows.Forms.Button restartButton;
-        private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.CheckBox DisplayHistoryCheckBox;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton P2StartsRadioButton;
-        private System.Windows.Forms.RadioButton P1StartsRadioButton;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown Secs;
-        private System.Windows.Forms.NumericUpDown Mins;
-        private System.Windows.Forms.ColorDialog colorDialog1;
-        private System.Windows.Forms.Button P2ChangeColorButton;
-        private System.Windows.Forms.Button P1ChangeColorButton;
-        private System.Windows.Forms.Button settingsButton;
-        private System.Windows.Forms.ColorDialog colorDialog2;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown P2PointsToPassUpDown;
-        private System.Windows.Forms.NumericUpDown P1PointsToPassUpDown;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.NumericUpDown P2IncrementUpDown;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown P1IncrementUpDown;
-        private System.Windows.Forms.Label LosingPlayerLabel;
-        private System.Windows.Forms.CheckBox LoopPlaylistCheckBox;
-        private System.Windows.Forms.CheckBox ShufflePlaylistCheckBox;
-        private System.Windows.Forms.PictureBox pictureBox4;
-        private System.Windows.Forms.PictureBox pictureBox3;
-        private System.Windows.Forms.CheckBox SingePlayerCheckBox;
-        private System.Windows.Forms.PictureBox pictureBox5;
-        private System.Windows.Forms.Button export;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TrackBar trackBar1;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.BufferedPanel panel1;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        public System.Windows.Forms.TextBox P2NameTextBox;
+        public System.Windows.Forms.Label P2NameSettingsLabel;
+        public System.Windows.Forms.Label Player2Name;
+        public System.Windows.Forms.TextBox P1NameTextBox;
+        public System.Windows.Forms.Label P1NameSettingsLabel;
+        public System.Windows.Forms.Label Player1Name;
+        public System.Windows.Forms.Label songName;
+        public System.Windows.Forms.Button Start;
+        public System.Windows.Forms.Label ScoreP2;
+        public System.Windows.Forms.Label ScoreP1;
+        public System.Windows.Forms.Label TimerP1;
+        public System.Windows.Forms.Label TimerP2;
+        public System.Windows.Forms.Button restartButton;
+        public System.Windows.Forms.ListBox listBox2;
+        public System.Windows.Forms.CheckBox DisplayHistoryCheckBox;
+        public System.Windows.Forms.GroupBox groupBox1;
+        public System.Windows.Forms.RadioButton P2StartsRadioButton;
+        public System.Windows.Forms.RadioButton P1StartsRadioButton;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.NumericUpDown Secs;
+        public System.Windows.Forms.NumericUpDown Mins;
+        public System.Windows.Forms.ColorDialog colorDialog1;
+        public System.Windows.Forms.Button P2ChangeColorButton;
+        public System.Windows.Forms.Button P1ChangeColorButton;
+        public System.Windows.Forms.Button settingsButton;
+        public System.Windows.Forms.ColorDialog colorDialog2;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.NumericUpDown P2PointsToPassUpDown;
+        public System.Windows.Forms.NumericUpDown P1PointsToPassUpDown;
+        public System.Windows.Forms.ListBox listBox1;
+        public System.Windows.Forms.PictureBox pictureBox2;
+        public System.Windows.Forms.Label label8;
+        public System.Windows.Forms.NumericUpDown P2IncrementUpDown;
+        public System.Windows.Forms.Label label7;
+        public System.Windows.Forms.NumericUpDown P1IncrementUpDown;
+        public System.Windows.Forms.Label LosingPlayerLabel;
+        public System.Windows.Forms.CheckBox LoopPlaylistCheckBox;
+        public System.Windows.Forms.CheckBox ShufflePlaylistCheckBox;
+        public System.Windows.Forms.PictureBox pictureBox4;
+        public System.Windows.Forms.PictureBox pictureBox3;
+        public System.Windows.Forms.CheckBox SingePlayerCheckBox;
+        public System.Windows.Forms.PictureBox pictureBox5;
+        public System.Windows.Forms.Button export;
+        public System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.TrackBar trackBar1;
+        public System.Windows.Forms.Timer timer1;
+        public System.Windows.Forms.Label label6;
+        public System.Windows.Forms.NumericUpDown numericUpDown1;
+        public System.Windows.Forms.BufferedPanel panel1;
+        public System.Windows.Forms.CheckBox checkBox1;
+        public System.Windows.Forms.Label label9;
+        public System.Windows.Forms.NumericUpDown numericUpDown2;
+        public System.Windows.Forms.CheckBox chaseClassicB;
     }
 
 
