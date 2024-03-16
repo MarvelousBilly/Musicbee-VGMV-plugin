@@ -3,23 +3,19 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 
 namespace MusicBeePlugin {
-    public class ChaseClassic {
+    public class ChaseClassicOLD {
         public VGMV v;
 
-        public ChaseClassic(VGMV v) {
+        public ChaseClassicOLD(VGMV v) {
             this.v = v;
         }
 
         bool pushback = false;
-        bool pushedBack = false;
         bool p1Done = false;
         bool p1JustDone = false;
         bool check = false;
-        int pointGaint = 0;
-        int p2PointGaint = 0;
 
         public void start() {
             //string startingSong = mApi.NowPlayingList_GetListFileUrl(0); //gets current song
@@ -52,9 +48,7 @@ namespace MusicBeePlugin {
             p1Done = false;
             p1JustDone = false;
             check = false;
-            pointGaint = 0;
-            pushedBack = false;
-            p2PointGaint = 0;
+
 
             v.p1Score.reset();
             v.p2Score.reset();
@@ -158,14 +152,9 @@ namespace MusicBeePlugin {
                 v.TimerP1.Font = v.smallerFont;
 
                 v.timeP1 = 0;
-                if(pointGain == 2 && p2PointGaint == 1) {
-                    pointGain = 1;
-                }
-                pointGaint = p2PointGaint - pointGain;
                 v.p2Score._score -= pointGain; //remove score directly based on player pushback
                                                //this keeps the statistics correct!
                 pushback = false;
-                pushedBack = true;
                 //send back to p2
                 v.player = 2;
             }
@@ -177,13 +166,8 @@ namespace MusicBeePlugin {
                 int pointsBefore = v.p2Score._score;
                 v.p2Score.intPoints(pointGain, 0, true);
                 if(pointGain != 2 && p1Done) {
-                    p2PointGaint = pointGain;
                     v.player = 1;
                     pushback = true;
-
-                    if (v.mApi.Player_GetPlayState() == Plugin.PlayState.Playing) {
-                        v.mApi.Player_PlayPause(); //pause the song
-                    }
                     v.TimerP1.Font = v.biggerFont;
                     v.TimerP2.Font = v.smallerFont;
                 }
@@ -234,103 +218,6 @@ namespace MusicBeePlugin {
 
         }
 
-        public void handleNextSong() {
-            if (!v.GAMEOVER && !pushback) {
-                v.framesWithAudio = 0;
-
-                v.mApi.Player_PlayNextTrack();
-                v.shouldCountTime = true;
-
-                v.songName.Hide();
-                v.panel1.Hide();
-
-                v.P1TimeAtNew = v.timeP1;
-                v.P2TimeAtNew = v.timeP2;
-            }
-
-        }
-
-        public void addSong(int value) {
-            if (pushedBack) {
-                VGMV.MyListBoxItem EmptyListItem = new VGMV.MyListBoxItem(Color.Transparent, "empty line", "", v.listBox1.Font);
-                string album = v.mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.Album);
-                string track = v.mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle);
-                string fileURL = v.mApi.NowPlayingList_GetListFileUrl(v.mApi.NowPlayingList_GetCurrentIndex());
-                string finalIn = track + "\n" + album + "\n";
-
-                Color toBeAss = Color.Tomato;                //(C=1, P=1)
-                if (pointGaint == 1) {           //no pushback (C=1, P=0)
-                    toBeAss = Color.DarkOrange;
-                }
-                else if (pointGaint == -1) { //single pushback (C=0, P=1)
-                    toBeAss = Color.Blue;
-                }
-                else if (pointGaint == -2) { //double pushback (C=0, P=2)
-                    toBeAss = Color.Purple;
-                }
-
-                if (v.player == 1 || v.singlePlayer) {
-                    v.listBox1.DrawMode = DrawMode.OwnerDrawVariable;
-                    v.listBox1.Items.Add(EmptyListItem);
-                    v.listBox1.Items.Add(new VGMV.MyListBoxItem(toBeAss, finalIn, fileURL, v.listBox1.Font));
-
-
-                    v.listBox1.TopIndex = v.listBox1.Items.Count - 1;
-                    v.listBox1.Refresh();
-
-                    //this.objectListView1.AddObject(new MyListBoxItem(toBeAss, finalIn));
-                }
-                else {
-                    v.listBox2.DrawMode = DrawMode.OwnerDrawVariable;
-
-                    v.listBox2.Items.Add(EmptyListItem);
-                    v.listBox2.Items.Add(new VGMV.MyListBoxItem(toBeAss, finalIn, fileURL, v.listBox2.Font));
-
-                    v.listBox2.TopIndex = v.listBox2.Items.Count - 1;
-                    v.listBox2.Refresh();
-
-                }
-                pushedBack = false;
-            }
-            else if (!pushback) {
-                VGMV.MyListBoxItem EmptyListItem = new VGMV.MyListBoxItem(Color.Transparent, "empty line", "", v.listBox1.Font);
-                string album = v.mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.Album);
-                string track = v.mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle);
-                string fileURL = v.mApi.NowPlayingList_GetListFileUrl(v.mApi.NowPlayingList_GetCurrentIndex());
-                string finalIn = track + "\n" + album + "\n";
-
-                Color toBeAss = Color.Tomato;
-                if (value == 1) {
-                    toBeAss = Color.DarkOrange;
-                }
-                else if (value == 2) {
-                    toBeAss = Color.Green;
-                }
-
-                if (v.player == 1 || v.singlePlayer) {
-                    v.listBox1.DrawMode = DrawMode.OwnerDrawVariable;
-                    v.listBox1.Items.Add(EmptyListItem);
-                    v.listBox1.Items.Add(new VGMV.MyListBoxItem(toBeAss, finalIn, fileURL, v.listBox1.Font));
-
-
-                    v.listBox1.TopIndex = v.listBox1.Items.Count - 1;
-                    v.listBox1.Refresh();
-
-                    //this.objectListView1.AddObject(new MyListBoxItem(toBeAss, finalIn));
-                }
-                else {
-                    v.listBox2.DrawMode = DrawMode.OwnerDrawVariable;
-
-                    v.listBox2.Items.Add(EmptyListItem);
-                    v.listBox2.Items.Add(new VGMV.MyListBoxItem(toBeAss, finalIn, fileURL, v.listBox2.Font));
-
-                    v.listBox2.TopIndex = v.listBox2.Items.Count - 1;
-                    v.listBox2.Refresh();
-
-                }
-            }
-        }
-
         public void gameOverCheck(bool quickEnd) {
             int A = v.mApi.Player_GetPosition(); //song playlength in ms
             //TODO dont count time if the start of the song is silent (until its playing audio duh)
@@ -346,11 +233,7 @@ namespace MusicBeePlugin {
                 else if (v.player == 2) {
                     v.timeP2 = v.P2TimeAtNew - A;
                 }
-                if (quickEnd && !p1Done) {
-                    quickEnd = false;
-                    v.timeP1 = -1000;
-                }
-                else if (p1Done) {
+                if (p1Done) {
                     v.timeP1 = 0;
                 }
                 if (p1JustDone) {

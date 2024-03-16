@@ -629,42 +629,47 @@ namespace MusicBeePlugin {
         }
 
         public void addSong(int value) {
-            MyListBoxItem EmptyListItem = new MyListBoxItem(Color.Transparent, "empty line", "", listBox1.Font);
-            string album = mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.Album);
-            string track = mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle);
-            string fileURL = mApi.NowPlayingList_GetListFileUrl(mApi.NowPlayingList_GetCurrentIndex());
-            string finalIn = track + "\n" + album + "\n";
-
-            Color toBeAss = Color.Tomato;
-            if (value == 1) {
-                toBeAss = Color.DarkOrange;
-            }
-            else if (value == 2) {
-                toBeAss = Color.Green;
-            }
-            if (!showHistory) {
-
-            }
-            if (player == 1 || singlePlayer) {
-                listBox1.DrawMode = DrawMode.OwnerDrawVariable;
-                listBox1.Items.Add(EmptyListItem);
-                listBox1.Items.Add(new MyListBoxItem(toBeAss, finalIn, fileURL, listBox1.Font));
-                
-
-                listBox1.TopIndex = listBox1.Items.Count - 1;
-                listBox1.Refresh();
-
-                //this.objectListView1.AddObject(new MyListBoxItem(toBeAss, finalIn));
+            if (chaseClassic) {
+                ChaseClassic.addSong(value);
             }
             else {
-                listBox2.DrawMode = DrawMode.OwnerDrawVariable;
+                MyListBoxItem EmptyListItem = new MyListBoxItem(Color.Transparent, "empty line", "", listBox1.Font);
+                string album = mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.Album);
+                string track = mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle);
+                string fileURL = mApi.NowPlayingList_GetListFileUrl(mApi.NowPlayingList_GetCurrentIndex());
+                string finalIn = track + "\n" + album + "\n";
 
-                listBox2.Items.Add(EmptyListItem);
-                listBox2.Items.Add(new MyListBoxItem(toBeAss, finalIn, fileURL, listBox2.Font));
+                Color toBeAss = Color.Tomato;
+                if (value == 1) {
+                    toBeAss = Color.DarkOrange;
+                }
+                else if (value == 2) {
+                    toBeAss = Color.Green;
+                }
+                if (!showHistory) {
 
-                listBox2.TopIndex = listBox2.Items.Count - 1;
-                listBox2.Refresh();
+                }
+                if (player == 1 || singlePlayer) {
+                    listBox1.DrawMode = DrawMode.OwnerDrawVariable;
+                    listBox1.Items.Add(EmptyListItem);
+                    listBox1.Items.Add(new MyListBoxItem(toBeAss, finalIn, fileURL, listBox1.Font));
 
+
+                    listBox1.TopIndex = listBox1.Items.Count - 1;
+                    listBox1.Refresh();
+
+                    //this.objectListView1.AddObject(new MyListBoxItem(toBeAss, finalIn));
+                }
+                else {
+                    listBox2.DrawMode = DrawMode.OwnerDrawVariable;
+
+                    listBox2.Items.Add(EmptyListItem);
+                    listBox2.Items.Add(new MyListBoxItem(toBeAss, finalIn, fileURL, listBox2.Font));
+
+                    listBox2.TopIndex = listBox2.Items.Count - 1;
+                    listBox2.Refresh();
+
+                }
             }
 
         }
@@ -820,7 +825,10 @@ namespace MusicBeePlugin {
         #endregion
 
         public void handleNextSong() {
-            if (!GAMEOVER) {
+            if (chaseClassic) {
+                ChaseClassic.handleNextSong();
+            }
+            else if (!GAMEOVER) {
                 framesWithAudio = 0;
 
                 mApi.Player_PlayNextTrack();
@@ -854,14 +862,26 @@ namespace MusicBeePlugin {
 
             if (!GAMEOVER) {
                 if (e.KeyCode == Keys.Left || e.KeyCode == Keys.J || e.KeyCode == Keys.A) { //should next song 1 point
-                    addSong(1);
-                    incPoints(1);
+                    if (chaseClassic) {
+                        incPoints(1);
+                        addSong(1);
+                    }
+                    else {
+                        addSong(1);
+                        incPoints(1);
+                    }
 
                     handleNextSong();
                 }
                 else if (e.KeyCode == Keys.Right || e.KeyCode == Keys.L || e.KeyCode == Keys.D) { //should next song 2 point
-                    addSong(2);
-                    incPoints(2);
+                    if (chaseClassic) {
+                        incPoints(2);
+                        addSong(2);
+                    }
+                    else {
+                        addSong(2);
+                        incPoints(2);
+                    }
 
                     handleNextSong();
                 }
@@ -869,8 +889,14 @@ namespace MusicBeePlugin {
                     showSong(true);
                 }
                 else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.K || e.KeyCode == Keys.S) { //skip song
-                    addSong(0);
-                    incPoints(0);
+                    if (chaseClassic) {
+                        incPoints(0);
+                        addSong(0);
+                    }
+                    else {
+                        addSong(0);
+                        incPoints(0);
+                    }
 
                     handleNextSong();
                 }
