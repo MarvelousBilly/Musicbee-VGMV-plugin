@@ -862,14 +862,26 @@ namespace MusicBeePlugin {
 
             if (!GAMEOVER) {
                 if (e.KeyCode == Keys.Left || e.KeyCode == Keys.J || e.KeyCode == Keys.A) { //should next song 1 point
-                    incPoints(1);
-                    addSong(1);
+                    if (chaseClassic) {
+                        incPoints(1);
+                        addSong(1);
+                    }
+                    else {
+                        addSong(1);
+                        incPoints(1);
+                    }
 
                     handleNextSong();
                 }
                 else if (e.KeyCode == Keys.Right || e.KeyCode == Keys.L || e.KeyCode == Keys.D) { //should next song 2 point
-                    incPoints(2);
-                    addSong(2);
+                    if (chaseClassic) {
+                        incPoints(2);
+                        addSong(2);
+                    }
+                    else {
+                        addSong(2);
+                        incPoints(2);
+                    }
 
                     handleNextSong();
                 }
@@ -877,8 +889,14 @@ namespace MusicBeePlugin {
                     showSong(true);
                 }
                 else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.K || e.KeyCode == Keys.S) { //skip song
-                    incPoints(0);
-                    addSong(0);
+                    if (chaseClassic) {
+                        incPoints(0);
+                        addSong(0);
+                    }
+                    else {
+                        addSong(0);
+                        incPoints(0);
+                    }
 
                     handleNextSong();
                 }
