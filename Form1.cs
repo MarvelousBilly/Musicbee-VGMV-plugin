@@ -69,6 +69,7 @@ namespace MusicBeePlugin {
         private Multiplayer Multiplayer;
         private Singleplayer Singleplayer;
         private ChaseClassic ChaseClassic;
+        private DataGatherer DataGatherer;
 
         public int startingPlayer = 1;
         public int player1Needs = 2;
@@ -130,6 +131,7 @@ namespace MusicBeePlugin {
             Multiplayer = new Multiplayer(this);
             Singleplayer = new Singleplayer(this);
             ChaseClassic = new ChaseClassic(this);
+            DataGatherer = new DataGatherer(this);
 
             InitTimer();
             updateSongSettings();
@@ -858,6 +860,10 @@ namespace MusicBeePlugin {
                 pictureBox3.Visible = !pictureBox3.Visible;
                 pictureBox4.Visible = !pictureBox4.Visible;
                 //MessageBox.Show(Dcolons.Count.ToString(), "title", MessageBoxButtons.OK);
+            }
+
+            if (e.KeyCode == Keys.B) {
+                DataGatherer.run();
             }
 
             if (!GAMEOVER) {

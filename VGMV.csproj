@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="bouncingImage.cs" />
     <Compile Include="ChaseClassic.cs" />
+    <Compile Include="DataGatherer.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
