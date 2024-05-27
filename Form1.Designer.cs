@@ -34,6 +34,8 @@
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.DisplayHistoryCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.quizSwitch = new System.Windows.Forms.Button();
+            this.chaseClassicB = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
@@ -78,8 +80,8 @@
             this.Player1Name = new System.Windows.Forms.Label();
             this.Player2Name = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.HintPicture = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.BufferedPanel();
-            this.chaseClassicB = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -94,6 +96,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HintPicture)).BeginInit();
             this.SuspendLayout();
             // 
             // songName
@@ -206,9 +209,6 @@
             this.listBox2.TabIndex = 11;
             this.listBox2.TabStop = false;
             this.listBox2.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox2_DrawItem);
-            this.listBox2.MouseClick += listBox2_MouseClick;
-            this.listBox2.MouseMove += listBox2_MouseMove;
-            this.listBox2.MouseLeave += listBox2_MouseLeave;
             // 
             // DisplayHistoryCheckBox
             // 
@@ -227,6 +227,7 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.groupBox1.Controls.Add(this.quizSwitch);
             this.groupBox1.Controls.Add(this.chaseClassicB);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.label9);
@@ -262,16 +263,38 @@
             this.groupBox1.Controls.Add(this.P1StartsRadioButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 59);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1181, 296);
+            this.groupBox1.Size = new System.Drawing.Size(1181, 342);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // quizSwitch
+            // 
+            this.quizSwitch.Location = new System.Drawing.Point(490, 289);
+            this.quizSwitch.Name = "quizSwitch";
+            this.quizSwitch.Size = new System.Drawing.Size(162, 31);
+            this.quizSwitch.TabIndex = 32;
+            this.quizSwitch.Text = "Go to Quiz Mode";
+            this.quizSwitch.UseVisualStyleBackColor = true;
+            this.quizSwitch.Click += new System.EventHandler(this.quizSwitch_Click);
+            // 
+            // chaseClassicB
+            // 
+            this.chaseClassicB.AutoSize = true;
+            this.chaseClassicB.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chaseClassicB.Location = new System.Drawing.Point(499, 257);
+            this.chaseClassicB.Name = "chaseClassicB";
+            this.chaseClassicB.Size = new System.Drawing.Size(142, 26);
+            this.chaseClassicB.TabIndex = 31;
+            this.chaseClassicB.Text = "Chase Classic";
+            this.chaseClassicB.UseVisualStyleBackColor = true;
+            this.chaseClassicB.CheckedChanged += new System.EventHandler(this.chaseClassicB_CheckedChanged);
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.Location = new System.Drawing.Point(11, 225);
+            this.checkBox1.Location = new System.Drawing.Point(17, 261);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(147, 26);
             this.checkBox1.TabIndex = 30;
@@ -283,7 +306,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(106, 262);
+            this.label9.Location = new System.Drawing.Point(112, 298);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(185, 22);
             this.label9.TabIndex = 29;
@@ -294,7 +317,7 @@
             // 
             this.numericUpDown2.DecimalPlaces = 2;
             this.numericUpDown2.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown2.Location = new System.Drawing.Point(11, 257);
+            this.numericUpDown2.Location = new System.Drawing.Point(17, 293);
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(89, 27);
             this.numericUpDown2.TabIndex = 28;
@@ -310,7 +333,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(972, 262);
+            this.label6.Location = new System.Drawing.Point(962, 298);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(106, 22);
             this.label6.TabIndex = 29;
@@ -321,7 +344,7 @@
             // 
             this.numericUpDown1.DecimalPlaces = 2;
             this.numericUpDown1.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown1.Location = new System.Drawing.Point(1084, 260);
+            this.numericUpDown1.Location = new System.Drawing.Point(1074, 296);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(89, 27);
             this.numericUpDown1.TabIndex = 28;
@@ -702,9 +725,6 @@
             this.listBox1.Size = new System.Drawing.Size(297, 425);
             this.listBox1.TabIndex = 15;
             this.listBox1.TabStop = false;
-            this.listBox1.MouseClick += listBox1_MouseClick;
-            this.listBox1.MouseMove += listBox1_MouseMove;
-            this.listBox1.MouseLeave += listBox1_MouseLeave;
             // 
             // LosingPlayerLabel
             // 
@@ -786,6 +806,15 @@
             this.timer1.Interval = 50;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // HintPicture
+            // 
+            this.HintPicture.Location = new System.Drawing.Point(348, 141);
+            this.HintPicture.Name = "HintPicture";
+            this.HintPicture.Size = new System.Drawing.Size(500, 500);
+            this.HintPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.HintPicture.TabIndex = 33;
+            this.HintPicture.TabStop = false;
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
@@ -796,18 +825,6 @@
             this.panel1.Size = new System.Drawing.Size(500, 500);
             this.panel1.TabIndex = 30;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            // 
-            // chaseClassicB
-            // 
-            this.chaseClassicB.AutoSize = true;
-            this.chaseClassicB.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chaseClassicB.Location = new System.Drawing.Point(499, 257);
-            this.chaseClassicB.Name = "chaseClassicB";
-            this.chaseClassicB.Size = new System.Drawing.Size(142, 26);
-            this.chaseClassicB.TabIndex = 31;
-            this.chaseClassicB.Text = "Chase Classic";
-            this.chaseClassicB.UseVisualStyleBackColor = true;
-            this.chaseClassicB.CheckedChanged += new System.EventHandler(this.chaseClassicB_CheckedChanged);
             // 
             // VGMV
             // 
@@ -834,6 +851,7 @@
             this.Controls.Add(this.ScoreP2);
             this.Controls.Add(this.Start);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.HintPicture);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "VGMV";
             this.Text = "VGMV";
@@ -853,6 +871,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HintPicture)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -914,6 +933,8 @@
         public System.Windows.Forms.Label label9;
         public System.Windows.Forms.NumericUpDown numericUpDown2;
         public System.Windows.Forms.CheckBox chaseClassicB;
+        public System.Windows.Forms.Button quizSwitch;
+        public System.Windows.Forms.PictureBox HintPicture;
     }
 
 
