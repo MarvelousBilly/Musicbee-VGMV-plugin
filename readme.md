@@ -17,7 +17,7 @@ Then, in the Musicbee text at the top, click tools and there will be a "Start VG
 ---------Quiz Mode--------
 * Click "Enter Quiz Mode" in the settings to start
 * Go to C:\Users\USERNAME\Music\MusicBee and there should be a QUIZ.txt file
-* * If you do not have the MusicBee folder, please create it, and *then* click "Enter Quiz Mode"
+  * If you do not have the MusicBee folder, please create it, and *then* click "Enter Quiz Mode"
 * There will be 50 prepopulated lines. Make that match the quiz's track count
 * Any options (Start, Hint, HintAt, RevealAt) are optional, but you need '; ' to seperate the values
 * Start is the milliseconds position the song will start at
