@@ -85,16 +85,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="bouncingImage.cs" />
-    <Compile Include="ChaseClassic.cs" />
+    <Compile Include="Modes\ChaseClassic.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChaseClassicOLD.cs" />
-    <Compile Include="Singleplayer.cs" />
-    <Compile Include="Multiplayer.cs" />
+    <Compile Include="Modes\ChaseClassicOLD.cs" />
+    <Compile Include="Modes\Quiz.cs" />
+    <Compile Include="Modes\Singleplayer.cs" />
+    <Compile Include="Modes\Multiplayer.cs" />
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
