@@ -117,6 +117,7 @@ namespace MusicBeePlugin {
         public bool quickRounds = true;
         public float quickRoundLength = 2.0f;
         public bool sampleRounds = false;
+        public double lastPerc = 0.0;
 
         public int framesWithAudio = 0;
 
@@ -190,7 +191,7 @@ namespace MusicBeePlugin {
             checkBox1.Font =                mFont12;
             quizSwitch.Font =               mFont12;
             chaseClassicB.Font =            mFont12;
-
+            SampleRounds.Font =             mFont12;
 
             //Fonts now no longer need to be set in Form1.Designer.cs -- they are set here instead.
             //The sizing of other elements though depends on the DPI scaling of the computer you are editing on??
@@ -865,12 +866,17 @@ namespace MusicBeePlugin {
 
             mApi.Player_PlayNextTrack();
 
-            System.Threading.Thread.Sleep(300);
+            System.Threading.Thread.Sleep(500);
 
             int startAt;
             if (sampleRounds) {
                 //ms now equals perc
-                double perc = 0.4;
+                
+                Random rnd = new Random();
+                int percInt = rnd.Next(200, 400);
+                double perc = ((double)percInt) / 1000;
+                lastPerc = perc;
+
                 int duration = mApi.NowPlaying_GetDuration();
                 startAt = (int)(perc * duration);
             }
@@ -879,8 +885,8 @@ namespace MusicBeePlugin {
             }
             //get duration do math
 
-            mApi.Player_SetVolume(vol);
             mApi.Player_SetPosition(startAt);
+            mApi.Player_SetVolume(vol);
 
             songName.Hide();
             panel1.Hide();
@@ -1026,7 +1032,7 @@ namespace MusicBeePlugin {
                 }
                 else if (e.KeyCode == Keys.H) { //restart song
                     if (sampleRounds) {
-                        double perc = 0.4;
+                        double perc = lastPerc;
                         int duration = mApi.NowPlaying_GetDuration();
                         int startAt = (int)(perc * duration);
                         framesWithAudio = 0;

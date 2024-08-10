@@ -34,6 +34,7 @@
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.DisplayHistoryCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.SampleRounds = new System.Windows.Forms.CheckBox();
             this.quizSwitch = new System.Windows.Forms.Button();
             this.chaseClassicB = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -82,7 +83,6 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.HintPicture = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.BufferedPanel();
-            this.SampleRounds = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -210,9 +210,6 @@
             this.listBox2.TabIndex = 11;
             this.listBox2.TabStop = false;
             this.listBox2.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox2_DrawItem);
-            this.listBox2.MouseClick += listBox2_MouseClick;
-            this.listBox2.MouseMove += listBox2_MouseMove;
-            this.listBox2.MouseLeave += listBox2_MouseLeave;
             // 
             // DisplayHistoryCheckBox
             // 
@@ -272,6 +269,18 @@
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // SampleRounds
+            // 
+            this.SampleRounds.AutoSize = true;
+            this.SampleRounds.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SampleRounds.Location = new System.Drawing.Point(17, 229);
+            this.SampleRounds.Name = "SampleRounds";
+            this.SampleRounds.Size = new System.Drawing.Size(160, 26);
+            this.SampleRounds.TabIndex = 33;
+            this.SampleRounds.Text = "Sample Rounds";
+            this.SampleRounds.UseVisualStyleBackColor = true;
+            this.SampleRounds.CheckedChanged += new System.EventHandler(this.SampleRounds_CheckedChanged);
             // 
             // quizSwitch
             // 
@@ -730,9 +739,6 @@
             this.listBox1.Size = new System.Drawing.Size(297, 425);
             this.listBox1.TabIndex = 15;
             this.listBox1.TabStop = false;
-            this.listBox1.MouseClick += listBox1_MouseClick;
-            this.listBox1.MouseMove += listBox1_MouseMove;
-            this.listBox1.MouseLeave += listBox1_MouseLeave;
             // 
             // LosingPlayerLabel
             // 
@@ -833,18 +839,6 @@
             this.panel1.Size = new System.Drawing.Size(500, 500);
             this.panel1.TabIndex = 30;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            // 
-            // SampleRounds
-            // 
-            this.SampleRounds.AutoSize = true;
-            this.SampleRounds.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SampleRounds.Location = new System.Drawing.Point(17, 229);
-            this.SampleRounds.Name = "SampleRounds";
-            this.SampleRounds.Size = new System.Drawing.Size(160, 26);
-            this.SampleRounds.TabIndex = 33;
-            this.SampleRounds.Text = "Sample Rounds";
-            this.SampleRounds.UseVisualStyleBackColor = true;
-            this.SampleRounds.CheckedChanged += new System.EventHandler(this.SampleRounds_CheckedChanged);
             // 
             // VGMV
             // 

@@ -161,9 +161,10 @@ namespace MusicBeePlugin {
                 if(pointGain == 2 && p2PointGaint == 1) {
                     pointGain = 1;
                 }
+
                 pointGaint = p2PointGaint - pointGain;
-                v.p2Score._score -= pointGain; //remove score directly based on player pushback
-                                               //this keeps the statistics correct!
+                v.p1Score._score += pointGain - p2PointGaint;
+                
                 pushback = false;
                 pushedBack = true;
                 //send back to p2
