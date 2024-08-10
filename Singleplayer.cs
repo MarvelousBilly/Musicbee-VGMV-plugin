@@ -142,10 +142,6 @@ namespace MusicBeePlugin {
 
         public void gameOverCheck(bool quickEnd) {
             int A = v.mApi.Player_GetPosition(); //song playlength in ms
-            //TODO dont count time if the start of the song is silent (until its playing audio duh)
-            if (A <= 700) {
-                A = 0;
-            }
 
             if ((!v.GAMEOVER && v.shouldCountTime && v.mApi.Player_GetPlayState() == Plugin.PlayState.Playing) || quickEnd) { //if time should move AND song playing,
 

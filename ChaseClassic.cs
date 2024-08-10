@@ -16,7 +16,7 @@ namespace MusicBeePlugin {
         bool pushback = false;
         bool pushedBack = false;
         bool p1Done = false;
-        bool p1JustDone = false;
+        public bool p1JustDone = false;
         bool check = false;
         int pointGaint = 0;
         int p2PointGaint = 0;
@@ -230,22 +230,6 @@ namespace MusicBeePlugin {
             else {
                 v.ScoreP1.ForeColor = Color.Black;
                 v.ScoreP2.ForeColor = v.P2Col;
-            }
-
-        }
-
-        public void handleNextSong() {
-            if (!v.GAMEOVER && !pushback) {
-                v.framesWithAudio = 0;
-
-                v.mApi.Player_PlayNextTrack();
-                v.shouldCountTime = true;
-
-                v.songName.Hide();
-                v.panel1.Hide();
-
-                v.P1TimeAtNew = v.timeP1;
-                v.P2TimeAtNew = v.timeP2;
             }
 
         }

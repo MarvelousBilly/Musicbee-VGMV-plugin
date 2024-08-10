@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MusicBeePlugin {
     public partial class VGMV: Form {
@@ -69,6 +71,7 @@ namespace MusicBeePlugin {
         private Multiplayer Multiplayer;
         private Singleplayer Singleplayer;
         private ChaseClassic ChaseClassic;
+        private Quiz Quiz;
 
         public int startingPlayer = 1;
         public int player1Needs = 2;
@@ -97,6 +100,8 @@ namespace MusicBeePlugin {
         public bool shouldShuffle = true;
         public bool singlePlayer = false;
         public bool chaseClassic = false;
+        public bool quizzing = false;
+        public bool showHint = false;
 
         public Score p1Score = new Score();
         public Score p2Score = new Score();
@@ -111,6 +116,7 @@ namespace MusicBeePlugin {
         public bool stupidMode = false;
         public bool quickRounds = true;
         public float quickRoundLength = 2.0f;
+        public bool sampleRounds = false;
 
         public int framesWithAudio = 0;
 
@@ -130,6 +136,7 @@ namespace MusicBeePlugin {
             Multiplayer = new Multiplayer(this);
             Singleplayer = new Singleplayer(this);
             ChaseClassic = new ChaseClassic(this);
+            Quiz = new Quiz(this);
 
             InitTimer();
             updateSongSettings();
@@ -181,6 +188,10 @@ namespace MusicBeePlugin {
             label6.Font =                   mFont12;
             label9.Font =                   mFont12;
             checkBox1.Font =                mFont12;
+            quizSwitch.Font =               mFont12;
+            chaseClassicB.Font =            mFont12;
+
+
             //Fonts now no longer need to be set in Form1.Designer.cs -- they are set here instead.
             //The sizing of other elements though depends on the DPI scaling of the computer you are editing on??
             //Either we move the size settings also to here which would be kinda ugly ngl gonna lie, or we just keep editing it each PR
@@ -241,11 +252,11 @@ namespace MusicBeePlugin {
                 listBox2.Hide();
             }
 
+            HintPicture.Hide();
+
             panel1.BackColor = Color.Transparent;
             panel1.Parent = this; // Set the actual parent control      
         }
-
-
 
         private void UpdateSettings() {
             if (_settingsManager.LoadSettings()) {
@@ -303,6 +314,9 @@ namespace MusicBeePlugin {
                 chaseClassic = _settingsManager.ChaseClassic;
                 chaseClassicB.Checked = chaseClassic;
 
+                sampleRounds = _settingsManager.SampleRounds;
+                SampleRounds.Checked = sampleRounds;
+
                 if (showHistory) {
                     listBox1.Show();
                     listBox2.Show();
@@ -323,26 +337,40 @@ namespace MusicBeePlugin {
         }
 
         public void start() {
-            if(!chaseClassic && !singlePlayer) {
-                Multiplayer.start();
+            if (quizzing) {
+                Quiz.start();
             }
-            if (singlePlayer) {
-                Singleplayer.start();
+            else {
+                if (!chaseClassic && !singlePlayer) {
+                    Multiplayer.start();
+                }
+                if (singlePlayer) {
+                    Singleplayer.start();
+                }
+                if (chaseClassic) {
+                    ChaseClassic.start();
+                }
             }
-            if (chaseClassic) {
-                ChaseClassic.start();
+
+            if (sampleRounds) { //skip the first track so it works :)
+                handleNextSong();
             }
         }
 
         public void incPoints(int pointGain) {
-            if(!chaseClassic && !singlePlayer) {
-                Multiplayer.incPoints(pointGain);
+            if (quizzing) {
+                Quiz.incPoints(pointGain);
             }
-            if (singlePlayer) {
-                Singleplayer.incPoints(pointGain);
-            }
-            if (chaseClassic) {
-                ChaseClassic.incPoints(pointGain);
+            else {
+                if (!chaseClassic && !singlePlayer) {
+                    Multiplayer.incPoints(pointGain);
+                }
+                if (singlePlayer) {
+                    Singleplayer.incPoints(pointGain);
+                }
+                if (chaseClassic) {
+                    ChaseClassic.incPoints(pointGain);
+                }
             }
         }
 
@@ -418,9 +446,8 @@ namespace MusicBeePlugin {
 
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-
             //album art
-            g.DrawImage(Art, 0, 0, 500, 500);
+            g.DrawImage(Art, 0, 0, panel1.Width, panel1.Height);
 
 
             //spectograph
@@ -456,19 +483,17 @@ namespace MusicBeePlugin {
 
             //alien dance
             if (pictureBox3.Visible || GAMEOVER) {
-                g.DrawImage(images[(ticks % 65 * 2) % 65], new Point(500 - images[0].Width, 500 - images[0].Height));
+                g.DrawImage(images[(ticks % 65 * 2) % 65], new Point(panel1.Width - images[0].Width, panel1.Height - images[0].Height));
 
                 g.TranslateTransform(images[0].Width, 0);
                 g.ScaleTransform(-1, 1);
-                g.DrawImage(images[(ticks % 65 * 2) % 65], new Point(0, 500 - images[0].Height));
+                g.DrawImage(images[(ticks % 65 * 2) % 65], new Point(0, panel1.Height - images[0].Height));
                 g.ScaleTransform(-1, 1);
                 g.TranslateTransform(-images[0].Width, 0);
 
             }
 
         }
-
-
         private List<Point> generateFFT() {
             mApi.NowPlaying_GetSpectrumData(fft);
 
@@ -476,7 +501,7 @@ namespace MusicBeePlugin {
 
             int scaleFactor = fft.Length / panel1.Width;
             for (int j = 0; j < fft.Length; j += scaleFactor) {
-                int x = (int)((double)j * 500 / fft.Length);
+                int x = (int)((double)j * panel1.Width / fft.Length);
 
                 int y = (int)(450 - Math.Min(fft[j] * 1000, 150));
 
@@ -563,14 +588,21 @@ namespace MusicBeePlugin {
         }
 
         private void gameOverCheck(bool quickEnd) {
-            if (!chaseClassic && !singlePlayer) {
-                Multiplayer.gameOverCheck(quickEnd);
+            if (quizzing) {
+                Quiz.gameOverCheck(quickEnd);
+                //nothing :D you cant lose in quiz
+                //TODO: maybe make this do something though
             }
-            if (singlePlayer) {
-                Singleplayer.gameOverCheck(quickEnd);
-            }
-            if (chaseClassic) {
-                ChaseClassic.gameOverCheck(quickEnd);
+            else {
+                if (!chaseClassic && !singlePlayer) {
+                    Multiplayer.gameOverCheck(quickEnd);
+                }
+                if (singlePlayer) {
+                    Singleplayer.gameOverCheck(quickEnd);
+                }
+                if (chaseClassic) {
+                    ChaseClassic.gameOverCheck(quickEnd);
+                }
             }
         }
 
@@ -580,6 +612,7 @@ namespace MusicBeePlugin {
             if (showBoxes) {
                 songName.Show();
                 panel1.Show();
+                HintPicture.Hide();
                 shouldCountTime = false;
                 havePaused = false;
             }
@@ -587,6 +620,8 @@ namespace MusicBeePlugin {
             if (!showBoxes && !GAMEOVER) { //dont update if game is not over, and hide the game 
                 panel1.Hide();
                 songName.Hide();
+                panel1.Hide();
+                HintPicture.Hide();
                 havePaused = false;
                 return;
             }
@@ -824,28 +859,104 @@ namespace MusicBeePlugin {
 
         #endregion
 
-        public void handleNextSong() {
-            if (chaseClassic) {
-                ChaseClassic.handleNextSong();
+        public void startSongAt(int ms) {
+            float vol = mApi.Player_GetVolume();
+            mApi.Player_SetVolume(0);
+
+            mApi.Player_PlayNextTrack();
+
+            System.Threading.Thread.Sleep(300);
+
+            int startAt;
+            if (sampleRounds) {
+                //ms now equals perc
+                double perc = 0.4;
+                int duration = mApi.NowPlaying_GetDuration();
+                startAt = (int)(perc * duration);
             }
-            else if (!GAMEOVER) {
-                framesWithAudio = 0;
+            else {
+                startAt = ms;
+            }
+            //get duration do math
 
-                mApi.Player_PlayNextTrack();
-                shouldCountTime = true;
+            mApi.Player_SetVolume(vol);
+            mApi.Player_SetPosition(startAt);
 
-                songName.Hide();
-                panel1.Hide();
+            songName.Hide();
+            panel1.Hide();
 
+            if (sampleRounds) { //hope this works :)
+                if(player == 1 || singlePlayer) {
+                    P1TimeAtNew = timeP1 + mApi.Player_GetPosition();
+                    P2TimeAtNew = timeP2;
+                }
+                else {
+                    P1TimeAtNew = timeP1;
+                    P2TimeAtNew = timeP2 + mApi.Player_GetPosition();
+                }
+            }
+            else {
                 P1TimeAtNew = timeP1;
                 P2TimeAtNew = timeP2;
             }
 
+            framesWithAudio = 0;
+            shouldCountTime = true;
         }
 
-        public void showMessage(string text) {
+        public void setUpNext() {
+            framesWithAudio = 0;
+
+            shouldCountTime = true;
+            mApi.Player_PlayNextTrack();
+
+            songName.Hide();
+            panel1.Hide();
+
+            P1TimeAtNew = timeP1;
+            P2TimeAtNew = timeP2;
+        }
+
+        public void handleNextSong() {
+            if (sampleRounds) {
+                startSongAt(0);
+            }
+            else if (quizzing) {
+                string pattern = "Start: .*?(;|$)";
+                Regex re = new Regex(pattern);
+                string path = (Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + "\\MusicBee\\QUIZ.txt");
+                int index = mApi.NowPlayingList_GetCurrentIndex();
+
+                string line = File.ReadLines(path).Skip(index + 1).FirstOrDefault();
+
+                if (re.IsMatch(line)) {
+                    string startMS = re.Match(line).Value;
+                    startMS = startMS.Substring(7).TrimEnd(';');
+
+                    int i;
+                    bool success = int.TryParse(startMS, out i);
+
+                    //showMessage(i.ToString());
+                    if (success) {
+                        startSongAt(i);
+                    }
+                    else {
+                        setUpNext();
+                    }
+                }
+                else {
+                    setUpNext();
+                }
+            }
+            else if (!GAMEOVER) {
+                setUpNext();
+            }
+        }
+
+        public void showMessage(String text) {
             MessageBox.Show(text, "title", MessageBoxButtons.OK);
         }
+
 
         public void VGMV_KeyDown(object sender, KeyEventArgs e) {
             //Typing in text box while settings is open will press the keys so better to have disabled until closed again
@@ -870,7 +981,10 @@ namespace MusicBeePlugin {
                         addSong(1);
                         incPoints(1);
                     }
-
+                    if (ChaseClassic.p1JustDone) {
+                        player = 2;
+                        ChaseClassic.p1JustDone = false;
+                    }
                     handleNextSong();
                 }
                 else if (e.KeyCode == Keys.Right || e.KeyCode == Keys.L || e.KeyCode == Keys.D) { //should next song 2 point
@@ -882,7 +996,10 @@ namespace MusicBeePlugin {
                         addSong(2);
                         incPoints(2);
                     }
-
+                    if (ChaseClassic.p1JustDone) {
+                        player = 2;
+                        ChaseClassic.p1JustDone = false;
+                    }
                     handleNextSong();
                 }
                 else if (e.KeyCode == Keys.Up || e.KeyCode == Keys.I || e.KeyCode == Keys.W) { //pause song, then display track name and art
@@ -897,7 +1014,10 @@ namespace MusicBeePlugin {
                         addSong(0);
                         incPoints(0);
                     }
-
+                    if (ChaseClassic.p1JustDone) {
+                        player = 2;
+                        ChaseClassic.p1JustDone = false;
+                    }
                     handleNextSong();
                 }
                 else if (e.KeyCode == Keys.Space || e.KeyCode == Keys.M) {
@@ -905,10 +1025,22 @@ namespace MusicBeePlugin {
                     framesWithAudio = -1000; //to note to not keep pausing
                 }
                 else if (e.KeyCode == Keys.H) { //restart song
-                    framesWithAudio = 0;
-                    mApi.Player_SetPosition(0);
-                    if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
-                        mApi.Player_PlayPause();
+                    if (sampleRounds) {
+                        double perc = 0.4;
+                        int duration = mApi.NowPlaying_GetDuration();
+                        int startAt = (int)(perc * duration);
+                        framesWithAudio = 0;
+                        mApi.Player_SetPosition(startAt);
+                        if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
+                            mApi.Player_PlayPause();
+                        }
+                    }
+                    else {
+                        framesWithAudio = 0;
+                        mApi.Player_SetPosition(0);
+                        if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
+                            mApi.Player_PlayPause();
+                        }
                     }
                 }
                 else if (e.KeyCode == Keys.T) {
@@ -929,6 +1061,36 @@ namespace MusicBeePlugin {
                         stupidMode = true;
                         updateSongSettings();
                     }
+                }
+                else if (e.KeyCode == Keys.Y && quizzing) {
+                    if (!HintPicture.Visible && !panel1.Visible) {
+                        showHint = true;
+
+                        string pattern = "Hint: .*?(;|$)";
+                        Regex re = new Regex(pattern);
+                        string path = (Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + "\\MusicBee\\QUIZ.txt");
+                        int index = mApi.NowPlayingList_GetCurrentIndex();
+                        string line = File.ReadLines(path).Skip(index).FirstOrDefault();
+                        if (re.IsMatch(line)) {
+                            string url = re.Match(line).Value;
+                            url = url.Substring(6).TrimEnd(';');
+
+                            pattern = "(http|ftp|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])";
+                            Regex urlMatch = new Regex(pattern);
+
+                            bool isUrl = urlMatch.IsMatch(url);
+
+                            if (isUrl) {
+                                HintPicture.Load(url);
+                                HintPicture.Show();
+                            }
+                            else {
+                                HintPicture.Image = Image.FromFile(url);
+                                HintPicture.Show();
+                            }
+                        }
+                    }
+
                 }
             }
             else {
@@ -1221,6 +1383,42 @@ namespace MusicBeePlugin {
                 SingePlayerCheckBox.Checked = false;
             }
             _settingsManager.ChaseClassic = chaseClassic;
+            _settingsManager.SaveSettings();
+
+        }
+
+        private void quizSwitch_Click(object sender, EventArgs e) {
+            quizzing = true;
+
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + "\\MusicBee\\QUIZ.txt";
+
+            if (!File.Exists(path)) {
+                using (var writer = new StreamWriter(path)) {
+                    writer.WriteLine("Need a starting song! Start: 0");
+
+                    for (int i = 0; i < 50; i++) {
+                        writer.WriteLine("Start: 10000; Hint: https://i.imgur.com/DTqWp1C.png; HintAt: 30000; RevealAt: 60000");
+                    }
+                }
+            }
+
+
+            //TODO:
+            //get the only text file
+            //okay so then, that will have information for each song such as:
+            //{Start: 155000; Hint: https://test.com/image.jpg}
+            //can add options later.
+            //So, once we get this, we run the Quiz.cs file instead of singleplayer
+            //Now, when you press idk H, it will show the hint
+            //It will also go "Start" milliseconds into the song when you play a new song
+            //If Start is empty, assume 0
+
+
+        }
+
+        private void SampleRounds_CheckedChanged(object sender, EventArgs e) {
+            sampleRounds = SampleRounds.Checked;
+            _settingsManager.SampleRounds = sampleRounds;
             _settingsManager.SaveSettings();
 
         }

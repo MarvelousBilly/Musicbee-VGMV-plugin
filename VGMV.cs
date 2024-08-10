@@ -18,12 +18,12 @@ namespace MusicBeePlugin
             mbApiInterface.Initialise(apiInterfacePtr);
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "VGM Versus";
-            about.Description = "VGM Vesus in Musicbee!";
+            about.Description = "VGM Versus in Musicbee!";
             about.Author = "MarvelousBilly";
             about.TargetApplication = "";   //  the name of a Plugin Storage device or panel header for a dockable panel
             about.Type = PluginType.General;
             about.VersionMajor = 1;  // your plugin version
-            about.VersionMinor = 3;
+            about.VersionMinor = 6;
             about.Revision = 0;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
