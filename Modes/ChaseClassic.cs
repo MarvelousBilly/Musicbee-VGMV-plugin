@@ -13,7 +13,7 @@ namespace MusicBeePlugin {
             this.v = v;
         }
 
-        bool pushback = false;
+        public bool pushback = false;
         bool pushedBack = false;
         bool p1Done = false;
         public bool p1JustDone = false;
@@ -315,7 +315,21 @@ namespace MusicBeePlugin {
                 }
             }
         }
+        public void handleNextSong() {
+            if (!v.GAMEOVER && !pushback) {
+                v.framesWithAudio = 0;
 
+                v.mApi.Player_PlayNextTrack();
+                v.shouldCountTime = true;
+
+                v.songName.Hide();
+                v.panel1.Hide();
+
+                v.P1TimeAtNew = v.timeP1;
+                v.P2TimeAtNew = v.timeP2;
+            }
+
+        }
         public void gameOverCheck(bool quickEnd) {
             int A = v.mApi.Player_GetPosition(); //song playlength in ms
             //TODO dont count time if the start of the song is silent (until its playing audio duh)

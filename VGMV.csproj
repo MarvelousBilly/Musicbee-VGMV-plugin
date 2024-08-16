@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="bouncingImage.cs" />
+    <Compile Include="InputHandler.cs" />
     <Compile Include="Modes\ChaseClassic.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

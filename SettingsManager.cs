@@ -34,6 +34,7 @@ namespace MusicBeePlugin
         public float QuickRoundLength { get; set; }
         public bool ChaseClassic { get; set; }
         public bool SampleRounds { get; set; }
+        public int SampleDelay { get; set; }
 
         public void SaveSettings()
         {
@@ -59,6 +60,7 @@ namespace MusicBeePlugin
                 writer.WriteLine($"QuickRoundLength={QuickRoundLength}");
                 writer.WriteLine($"ChaseClassic={ChaseClassic}");
                 writer.WriteLine($"SampleRounds={SampleRounds}");
+                writer.WriteLine($"SampleDelay={SampleDelay}");
             }
         }
 
@@ -125,6 +127,7 @@ namespace MusicBeePlugin
             QuickRoundLength = 1.0f;
             ChaseClassic = false;
             SampleRounds = false;
+            SampleDelay = 500;
             SaveSettings();
         }
 
@@ -219,6 +222,9 @@ namespace MusicBeePlugin
                                     break;
                                 case "SampleRounds":
                                     SampleRounds = LoadBool(value);
+                                    break;
+                                case "SampleDelay":
+                                    SampleDelay = LoadInt(value);
                                     break;
                             }
                         }

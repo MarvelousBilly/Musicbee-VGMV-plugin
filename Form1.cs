@@ -67,11 +67,12 @@ namespace MusicBeePlugin {
             //pictureBox3.Image = images[1];
         }
 
-        private SettingsManager _settingsManager = new SettingsManager();
-        private Multiplayer Multiplayer;
-        private Singleplayer Singleplayer;
-        private ChaseClassic ChaseClassic;
-        private Quiz Quiz;
+        public SettingsManager _settingsManager = new SettingsManager();
+        public Multiplayer Multiplayer;
+        public Singleplayer Singleplayer;
+        public ChaseClassic ChaseClassic;
+        public InputHandler InputHandler;
+        public Quiz Quiz;
 
         public int startingPlayer = 1;
         public int player1Needs = 2;
@@ -117,6 +118,7 @@ namespace MusicBeePlugin {
         public bool quickRounds = true;
         public float quickRoundLength = 2.0f;
         public bool sampleRounds = false;
+        public int sampleDelay = 500;
         public double lastPerc = 0.0;
 
         public int framesWithAudio = 0;
@@ -134,9 +136,19 @@ namespace MusicBeePlugin {
 
 
         public void VGMV_Load(object sender, EventArgs e) {
+
+            this.listBox1.MouseClick += listBox1_MouseClick;
+            this.listBox1.MouseMove += listBox1_MouseMove;
+            this.listBox1.MouseLeave += listBox1_MouseLeave;
+            this.listBox2.MouseClick += listBox2_MouseClick;
+            this.listBox2.MouseMove += listBox2_MouseMove;
+            this.listBox2.MouseLeave += listBox2_MouseLeave;
+
+
             Multiplayer = new Multiplayer(this);
             Singleplayer = new Singleplayer(this);
             ChaseClassic = new ChaseClassic(this);
+            InputHandler = new InputHandler(this);
             Quiz = new Quiz(this);
 
             InitTimer();
@@ -259,7 +271,7 @@ namespace MusicBeePlugin {
             panel1.Parent = this; // Set the actual parent control      
         }
 
-        private void UpdateSettings() {
+        public void UpdateSettings() {
             if (_settingsManager.LoadSettings()) {
                 startingPlayer = _settingsManager.P1Start ? 1 : 2;
                 if (startingPlayer == 1) {
@@ -317,6 +329,11 @@ namespace MusicBeePlugin {
 
                 sampleRounds = _settingsManager.SampleRounds;
                 SampleRounds.Checked = sampleRounds;
+                if(_settingsManager.SampleDelay == 0) {
+                    _settingsManager.SampleDelay = 500;
+                    _settingsManager.SaveSettings();
+                }
+                sampleDelay = _settingsManager.SampleDelay;
 
                 if (showHistory) {
                     listBox1.Show();
@@ -588,7 +605,7 @@ namespace MusicBeePlugin {
             }
         }
 
-        private void gameOverCheck(bool quickEnd) {
+        public void gameOverCheck(bool quickEnd) {
             if (quizzing) {
                 Quiz.gameOverCheck(quickEnd);
                 //nothing :D you cant lose in quiz
@@ -866,7 +883,7 @@ namespace MusicBeePlugin {
 
             mApi.Player_PlayNextTrack();
 
-            System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(sampleDelay);
 
             int startAt;
             if (sampleRounds) {
@@ -925,7 +942,14 @@ namespace MusicBeePlugin {
 
         public void handleNextSong() {
             if (sampleRounds) {
-                startSongAt(0);
+                if (!chaseClassic) {
+                    startSongAt(0);
+                }
+                else { //sample AND classic
+                    if (!ChaseClassic.pushback) {
+                        startSongAt(0);
+                    }
+                }
             }
             else if (quizzing) {
                 string pattern = "Start: .*?(;|$)";
@@ -954,6 +978,9 @@ namespace MusicBeePlugin {
                     setUpNext();
                 }
             }
+            else if (chaseClassic) {
+                ChaseClassic.handleNextSong();
+            }
             else if (!GAMEOVER) {
                 setUpNext();
             }
@@ -965,151 +992,7 @@ namespace MusicBeePlugin {
 
 
         public void VGMV_KeyDown(object sender, KeyEventArgs e) {
-            //Typing in text box while settings is open will press the keys so better to have disabled until closed again
-            if (groupBox1.Visible) {
-                e.Handled = false;
-                return;
-            }
-
-            if (e.KeyCode == Keys.P) {
-                pictureBox3.Visible = !pictureBox3.Visible;
-                pictureBox4.Visible = !pictureBox4.Visible;
-                //MessageBox.Show(Dcolons.Count.ToString(), "title", MessageBoxButtons.OK);
-            }
-
-            if (!GAMEOVER) {
-                if (e.KeyCode == Keys.Left || e.KeyCode == Keys.J || e.KeyCode == Keys.A) { //should next song 1 point
-                    if (chaseClassic) {
-                        incPoints(1);
-                        addSong(1);
-                    }
-                    else {
-                        addSong(1);
-                        incPoints(1);
-                    }
-                    if (ChaseClassic.p1JustDone) {
-                        player = 2;
-                        ChaseClassic.p1JustDone = false;
-                    }
-                    handleNextSong();
-                }
-                else if (e.KeyCode == Keys.Right || e.KeyCode == Keys.L || e.KeyCode == Keys.D) { //should next song 2 point
-                    if (chaseClassic) {
-                        incPoints(2);
-                        addSong(2);
-                    }
-                    else {
-                        addSong(2);
-                        incPoints(2);
-                    }
-                    if (ChaseClassic.p1JustDone) {
-                        player = 2;
-                        ChaseClassic.p1JustDone = false;
-                    }
-                    handleNextSong();
-                }
-                else if (e.KeyCode == Keys.Up || e.KeyCode == Keys.I || e.KeyCode == Keys.W) { //pause song, then display track name and art
-                    showSong(true);
-                }
-                else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.K || e.KeyCode == Keys.S) { //skip song
-                    if (chaseClassic) {
-                        incPoints(0);
-                        addSong(0);
-                    }
-                    else {
-                        addSong(0);
-                        incPoints(0);
-                    }
-                    if (ChaseClassic.p1JustDone) {
-                        player = 2;
-                        ChaseClassic.p1JustDone = false;
-                    }
-                    handleNextSong();
-                }
-                else if (e.KeyCode == Keys.Space || e.KeyCode == Keys.M) {
-                    mApi.Player_PlayPause();
-                    framesWithAudio = -1000; //to note to not keep pausing
-                }
-                else if (e.KeyCode == Keys.H) { //restart song
-                    if (sampleRounds) {
-                        double perc = lastPerc;
-                        int duration = mApi.NowPlaying_GetDuration();
-                        int startAt = (int)(perc * duration);
-                        framesWithAudio = 0;
-                        mApi.Player_SetPosition(startAt);
-                        if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
-                            mApi.Player_PlayPause();
-                        }
-                    }
-                    else {
-                        framesWithAudio = 0;
-                        mApi.Player_SetPosition(0);
-                        if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
-                            mApi.Player_PlayPause();
-                        }
-                    }
-                }
-                else if (e.KeyCode == Keys.T) {
-                    gameOverCheck(true);
-                }
-                else if (e.Control && e.Shift && e.KeyCode == Keys.R) {
-
-                    //reset settings (with pop-up?)
-                    _settingsManager.SetDefaultSettings();
-                    UpdateSettings();
-                }
-                else if (e.Control && e.Shift && e.KeyCode == Keys.O) {
-                    if (stupidMode) {
-                        ClientSize = new Size(1204, 668);
-                        stupidMode = false;
-                    }
-                    else {
-                        stupidMode = true;
-                        updateSongSettings();
-                    }
-                }
-                else if (e.KeyCode == Keys.Y && quizzing) {
-                    if (!HintPicture.Visible && !panel1.Visible) {
-                        showHint = true;
-
-                        string pattern = "Hint: .*?(;|$)";
-                        Regex re = new Regex(pattern);
-                        string path = (Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + "\\MusicBee\\QUIZ.txt");
-                        int index = mApi.NowPlayingList_GetCurrentIndex();
-                        string line = File.ReadLines(path).Skip(index).FirstOrDefault();
-                        if (re.IsMatch(line)) {
-                            string url = re.Match(line).Value;
-                            url = url.Substring(6).TrimEnd(';');
-
-                            pattern = "(http|ftp|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])";
-                            Regex urlMatch = new Regex(pattern);
-
-                            bool isUrl = urlMatch.IsMatch(url);
-
-                            if (isUrl) {
-                                HintPicture.Load(url);
-                                HintPicture.Show();
-                            }
-                            else {
-                                HintPicture.Image = Image.FromFile(url);
-                                HintPicture.Show();
-                            }
-                        }
-                    }
-
-                }
-            }
-            else {
-                if (e.KeyCode == Keys.Down || e.KeyCode == Keys.K || e.KeyCode == Keys.S) { //skip song
-                    mApi.Player_PlayNextTrack();
-                }
-                else if(e.KeyCode == Keys.Space || e.KeyCode == Keys.M) {
-                    mApi.Player_PlayPause();
-                }
-            }
-
-
-            e.Handled = false;
+            InputHandler.handle(sender, e);
         }
 
 
