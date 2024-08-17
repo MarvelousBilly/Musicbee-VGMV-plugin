@@ -905,19 +905,6 @@ namespace MusicBeePlugin {
             //get duration do math
 
             mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-            mApi.Player_SetPosition(startAt);
-
             mApi.Player_SetVolume(vol);
 
             songName.Hide();
