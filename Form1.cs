@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace MusicBeePlugin {
     public partial class VGMV: Form {
@@ -883,6 +884,7 @@ namespace MusicBeePlugin {
 
             mApi.Player_PlayNextTrack();
 
+            
             System.Threading.Thread.Sleep(sampleDelay);
 
             int startAt;
@@ -903,6 +905,19 @@ namespace MusicBeePlugin {
             //get duration do math
 
             mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+            mApi.Player_SetPosition(startAt);
+
             mApi.Player_SetVolume(vol);
 
             songName.Hide();
