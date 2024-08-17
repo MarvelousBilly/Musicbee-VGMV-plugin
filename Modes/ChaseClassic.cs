@@ -156,15 +156,14 @@ namespace MusicBeePlugin {
             else if (pushback) {
                 v.TimerP2.Font = v.biggerFont;
                 v.TimerP1.Font = v.smallerFont;
-
                 v.timeP1 = 0;
-                if(pointGain == 2 && p2PointGaint == 1) {
-                    pointGain = 1;
-                }
-
                 pointGaint = p2PointGaint - pointGain;
-                v.p1Score._score += pointGain - p2PointGaint;
-                
+                if (pointGain > 0 && p2PointGaint == 1) {
+                    pointGain = 2; //players push back a score of 1 :D
+                }
+                if (pointGain > 0) {
+                    v.p1Score._score += pointGain - p2PointGaint;
+                }
                 pushback = false;
                 pushedBack = true;
                 //send back to p2
