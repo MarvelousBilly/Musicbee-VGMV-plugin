@@ -35,6 +35,8 @@ namespace MusicBeePlugin
         public bool ChaseClassic { get; set; }
         public bool SampleRounds { get; set; }
         public int SampleDelay { get; set; }
+        public bool CodlyToggle { get; set; }
+
 
         public void SaveSettings()
         {
@@ -61,6 +63,7 @@ namespace MusicBeePlugin
                 writer.WriteLine($"ChaseClassic={ChaseClassic}");
                 writer.WriteLine($"SampleRounds={SampleRounds}");
                 writer.WriteLine($"SampleDelay={SampleDelay}");
+                writer.WriteLine($"CodlyToggle={CodlyToggle}");
             }
         }
 
@@ -128,6 +131,7 @@ namespace MusicBeePlugin
             ChaseClassic = false;
             SampleRounds = false;
             SampleDelay = 500;
+            CodlyToggle = false;
             SaveSettings();
         }
 
@@ -225,6 +229,9 @@ namespace MusicBeePlugin
                                     break;
                                 case "SampleDelay":
                                     SampleDelay = LoadInt(value);
+                                    break;
+                                case "CodlyToggle":
+                                    CodlyToggle = LoadBool(value);
                                     break;
                             }
                         }

@@ -85,6 +85,9 @@ namespace MusicBeePlugin {
                         double perc = v.lastPerc;
                         int duration = v.mApi.NowPlaying_GetDuration();
                         int startAt = (int)(perc * duration);
+                        if (v.codlyToggle) {
+                            v.mApi.Player_SetVolume(v.vol);
+                        }
                         v.framesWithAudio = 0;
                         v.mApi.Player_SetPosition(startAt);
                         if (v.mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {

@@ -120,8 +120,11 @@ namespace MusicBeePlugin {
         public float quickRoundLength = 2.0f;
         public bool sampleRounds = false;
         public int sampleDelay = 500;
-        public double lastPerc = 0.0;
 
+        public bool codlyToggle = false;
+        public float vol;
+
+        public double lastPerc = 0.0;
         public int framesWithAudio = 0;
 
         private Pen pen = new Pen(Color.FromArgb(170, 245, 245, 245), 2); // Change color and width as needed
@@ -205,6 +208,7 @@ namespace MusicBeePlugin {
             quizSwitch.Font =               mFont12;
             chaseClassicB.Font =            mFont12;
             SampleRounds.Font =             mFont12;
+            missedSongs.Font =              mFont12;
 
             //Fonts now no longer need to be set in Form1.Designer.cs -- they are set here instead.
             //The sizing of other elements though depends on the DPI scaling of the computer you are editing on??
@@ -335,6 +339,7 @@ namespace MusicBeePlugin {
                     _settingsManager.SaveSettings();
                 }
                 sampleDelay = _settingsManager.SampleDelay;
+                codlyToggle = _settingsManager.CodlyToggle;
 
                 if (showHistory) {
                     listBox1.Show();
@@ -879,7 +884,7 @@ namespace MusicBeePlugin {
         #endregion
 
         public void startSongAt(int ms) {
-            float vol = mApi.Player_GetVolume();
+            vol = mApi.Player_GetVolume();
             mApi.Player_SetVolume(0);
 
             mApi.Player_PlayNextTrack();
@@ -905,7 +910,9 @@ namespace MusicBeePlugin {
             //get duration do math
 
             mApi.Player_SetPosition(startAt);
-            mApi.Player_SetVolume(vol);
+            if (!codlyToggle) {
+                mApi.Player_SetVolume(vol);
+            }
 
             songName.Hide();
             panel1.Hide();
@@ -997,7 +1004,18 @@ namespace MusicBeePlugin {
             InputHandler.handle(sender, e);
         }
 
+        private void createPlaylist(ListBox listBox) {
+            List<string> output = new List<string>();
 
+            foreach (MyListBoxItem item in listBox.Items) {
+                if (item.Message != "empty line") {
+                    if (!item.ItemColor.Equals(Color.Green)) {
+                        output.Add(item.FileURL);
+                    }
+                }
+            }
+            mApi.Playlist_CreatePlaylist("", "Missed Tracks " + DateTime.Now.ToString().Replace("/", "-").Replace(":", ";"), output.ToArray());
+        }
 
         //boxes update below
 
@@ -1312,6 +1330,10 @@ namespace MusicBeePlugin {
             _settingsManager.SampleRounds = sampleRounds;
             _settingsManager.SaveSettings();
 
+        }
+
+        private void missedSongs_Click(object sender, EventArgs e) {
+            createPlaylist(listBox1);
         }
     }
 
