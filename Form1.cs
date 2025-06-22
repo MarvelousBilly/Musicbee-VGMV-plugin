@@ -9,6 +9,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Drawing.Drawing2D;
+using System.Threading;
 
 namespace MusicBeePlugin {
     public partial class VGMV: Form {
@@ -58,14 +61,24 @@ namespace MusicBeePlugin {
         Image[] images = new Image[66];
 
         private void LoadImages() {
-            Image image = Properties.Resources.alienDanceFast;
-            FrameDimension dimension = new FrameDimension(image.FrameDimensionsList[0]);
-
-            for (int i = 0; i < 65; i++) {
-                image.SelectActiveFrame(dimension, i);
-                images[i] = new Bitmap(image);
+            Image image;
+            Random rnd = new Random();
+            if (rnd.Next(1,3) == 1) { 
+                image = Properties.Resources.alienDance; //66 frames
             }
-            //pictureBox3.Image = images[1];
+            else {
+                image = Properties.Resources.tennaDance;
+            }
+            
+            FrameDimension dimension = new FrameDimension(image.FrameDimensionsList[0]);
+            int frameCount = image.GetFrameCount(dimension);
+
+            Array.Resize(ref images, frameCount);
+
+            for (int i = 0; i < frameCount - 1; i++) {
+                image.SelectActiveFrame(dimension, i);
+                images[i] = ResizeImage(new Bitmap(image), 256, 256);
+            }
         }
 
         public SettingsManager _settingsManager = new SettingsManager();
@@ -120,8 +133,11 @@ namespace MusicBeePlugin {
         public float quickRoundLength = 2.0f;
         public bool sampleRounds = false;
         public int sampleDelay = 500;
-        public double lastPerc = 0.0;
 
+        public bool codlyToggle = false;
+        public float vol;
+
+        public double lastPerc = 0.0;
         public int framesWithAudio = 0;
 
         private Pen pen = new Pen(Color.FromArgb(170, 245, 245, 245), 2); // Change color and width as needed
@@ -129,6 +145,9 @@ namespace MusicBeePlugin {
         //new Pen(Color.FromArgb(170, 100, 100, 255), 3);
         Bitmap Art;
         public int ticks = 0;
+        public int modTicks = 0;
+        private Stopwatch stopWatch = new Stopwatch();
+        private int millis = 0;
 
         MyListBoxItem currentlyHighlightedItem = null;
         public bool havePaused = false;
@@ -205,6 +224,7 @@ namespace MusicBeePlugin {
             quizSwitch.Font =               mFont12;
             chaseClassicB.Font =            mFont12;
             SampleRounds.Font =             mFont12;
+            missedSongs.Font =              mFont12;
 
             //Fonts now no longer need to be set in Form1.Designer.cs -- they are set here instead.
             //The sizing of other elements though depends on the DPI scaling of the computer you are editing on??
@@ -335,6 +355,7 @@ namespace MusicBeePlugin {
                     _settingsManager.SaveSettings();
                 }
                 sampleDelay = _settingsManager.SampleDelay;
+                codlyToggle = _settingsManager.CodlyToggle;
 
                 if (showHistory) {
                     listBox1.Show();
@@ -435,6 +456,7 @@ namespace MusicBeePlugin {
                 byte[] img;
                 mApi.Library_GetArtworkEx(mApi.NowPlaying_GetFileUrl(), 0, true, out temp1, out temp2, out img);
                 Art = (Bitmap)new ImageConverter().ConvertFrom(img);
+                Art = ResizeImage(Art, 500, 500);
             }
             catch {
                 Art = Properties.Resources.nocover;
@@ -458,6 +480,28 @@ namespace MusicBeePlugin {
         //it is much more annoying but allows for much more detail and precision than regular windows forms
         //yippie
 
+        public static Bitmap ResizeImage(Image image, int width, int height) {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage)) {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes()) {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
         private void panel1_Paint(object sender, PaintEventArgs e) {
 
             var g = e.Graphics;
@@ -466,6 +510,7 @@ namespace MusicBeePlugin {
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
             //album art
+            
             g.DrawImage(Art, 0, 0, panel1.Width, panel1.Height);
 
 
@@ -502,13 +547,16 @@ namespace MusicBeePlugin {
 
             //alien dance
             if (pictureBox3.Visible || GAMEOVER) {
-                g.DrawImage(images[(ticks % 65 * 2) % 65], new Point(panel1.Width - images[0].Width, panel1.Height - images[0].Height));
+                int newWidth = 128;
+                int newHeight = 128;
+                Bitmap newImage = ResizeImage(images[modTicks], newWidth, newHeight);
+                g.DrawImage(newImage, new Point(panel1.Width - newWidth, panel1.Height - newHeight));
 
-                g.TranslateTransform(images[0].Width, 0);
+                g.TranslateTransform(newWidth, 0);
                 g.ScaleTransform(-1, 1);
-                g.DrawImage(images[(ticks % 65 * 2) % 65], new Point(0, panel1.Height - images[0].Height));
+                g.DrawImage(newImage, new Point(0, panel1.Height - newHeight));
                 g.ScaleTransform(-1, 1);
-                g.TranslateTransform(-images[0].Width, 0);
+                g.TranslateTransform(-newWidth, 0);
 
             }
 
@@ -533,12 +581,32 @@ namespace MusicBeePlugin {
             return pointList;
         }
 
+        
+
         //timer
         public void InitTimer() {
             timer1.Start();
+            stopWatch.Start();
         }
+
         private void timer1_Tick(object sender, EventArgs e) {
-            ticks++;
+            TimeSpan ts = stopWatch.Elapsed;
+
+            millis = (int)stopWatch.Elapsed.TotalMilliseconds; //time since start
+            ticks++; //ticks since start
+
+            int arrayLen = images.Length - 1;
+
+            String bpms = mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.BeatsPerMin);
+
+            float bpmf = 133.0f;
+            if(bpms.Length >= 2) {
+                bpmf = float.Parse(bpms);
+            }
+            
+            
+            modTicks = (int)(((float)millis / 20.0f)*(bpmf/138.0f)) % arrayLen; //frame num of gif
+            
 
             if (pictureBox2.Visible) {
 
@@ -547,7 +615,7 @@ namespace MusicBeePlugin {
                 }
 
                 for (int j = 0; j < Dcolons.Count; j++) {
-                    Dcolons[j].tick(timer1.Interval);
+                    Dcolons[j].tick(50);
                     if (Dcolons[j].y > 500) {
                         Dcolons.Remove(Dcolons[j]);
                     }
@@ -557,8 +625,13 @@ namespace MusicBeePlugin {
                 Dcolons.Clear();
             }
 
-            pictureBox3.Image = images[(ticks % 65 * 2) % 65];
-            pictureBox4.Image = images[(ticks % 65 * 2) % 65];
+            Image im = images[modTicks];
+            Image imFlip = (Image)im.Clone();
+            imFlip.RotateFlip(RotateFlipType.RotateNoneFlipX);
+
+            pictureBox3.Image = im;
+            pictureBox4.Image = imFlip;
+
 
             graphPoints = generateFFT();
             panel1.Invalidate();
@@ -576,7 +649,7 @@ namespace MusicBeePlugin {
                 //every 50ms the timer ticks (approx)
                 //10 ticks with audio = 10*50 = 500ms of song
                 //to go backwards, 0.5s = 500ms of song / 50ms per tick = 10
-                if (maxFFT > 0 && framesWithAudio >= (quickRoundLength*1000)/50) {
+                if (maxFFT > 0 && framesWithAudio >= (quickRoundLength*1000)/timer1.Interval) {
                     mApi.Player_PlayPause();
                 }
             }
@@ -879,7 +952,7 @@ namespace MusicBeePlugin {
         #endregion
 
         public void startSongAt(int ms) {
-            float vol = mApi.Player_GetVolume();
+            vol = mApi.Player_GetVolume();
             mApi.Player_SetVolume(0);
 
             mApi.Player_PlayNextTrack();
@@ -905,7 +978,9 @@ namespace MusicBeePlugin {
             //get duration do math
 
             mApi.Player_SetPosition(startAt);
-            mApi.Player_SetVolume(vol);
+            if (!codlyToggle) {
+                mApi.Player_SetVolume(vol);
+            }
 
             songName.Hide();
             panel1.Hide();
@@ -933,6 +1008,30 @@ namespace MusicBeePlugin {
             framesWithAudio = 0;
 
             shouldCountTime = true;
+            if (havePaused) {
+                havePaused = false;
+                if (sampleRounds) {
+                    double perc = lastPerc;
+                    int duration = mApi.NowPlaying_GetDuration();
+                    int startAt = (int)(perc * duration);
+                    if (codlyToggle) {
+                        mApi.Player_SetVolume(vol);
+                    }
+                    framesWithAudio = 0;
+                    mApi.Player_SetPosition(startAt);
+                    if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
+                        mApi.Player_PlayPause();
+                    }
+                }
+                else {
+                    framesWithAudio = 0;
+                    mApi.Player_SetPosition(0);
+                    if (mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
+                        mApi.Player_PlayPause();
+                    }
+                }
+
+            }
             mApi.Player_PlayNextTrack();
 
             songName.Hide();
@@ -997,7 +1096,18 @@ namespace MusicBeePlugin {
             InputHandler.handle(sender, e);
         }
 
+        private void createPlaylist(ListBox listBox) {
+            List<string> output = new List<string>();
 
+            foreach (MyListBoxItem item in listBox.Items) {
+                if (item.Message != "empty line") {
+                    if (!item.ItemColor.Equals(Color.Green)) {
+                        output.Add(item.FileURL);
+                    }
+                }
+            }
+            mApi.Playlist_CreatePlaylist("", "Missed Tracks " + DateTime.Now.ToString().Replace("/", "-").Replace(":", ";"), output.ToArray());
+        }
 
         //boxes update below
 
@@ -1312,6 +1422,10 @@ namespace MusicBeePlugin {
             _settingsManager.SampleRounds = sampleRounds;
             _settingsManager.SaveSettings();
 
+        }
+
+        private void missedSongs_Click(object sender, EventArgs e) {
+            createPlaylist(listBox1);
         }
     }
 

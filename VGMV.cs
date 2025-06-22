@@ -81,31 +81,31 @@ namespace MusicBeePlugin
         // you need to set about.ReceiveNotificationFlags = PlayerEvents to receive all notifications, and not just the startup event
         public void ReceiveNotification(string sourceFileUrl, NotificationType type)
         {
-            // perform some action depending on the notification type
-            switch (type)
-            {
-                case NotificationType.PluginStartup:
-                    // perform startup initialisation
-                    switch (mbApiInterface.Player_GetPlayState())
-                    {
-                        case PlayState.Playing:
-                        case PlayState.Paused:
+            if (myForm != null) {
+                // perform some action depending on the notification type
+                switch (type) {
+                    case NotificationType.PluginStartup:
+                        // perform startup initialisation
+                        switch (mbApiInterface.Player_GetPlayState()) {
+                            case PlayState.Playing:
+                            case PlayState.Paused:
+                                break;
+                        }
+                        break;
+                    case NotificationType.TrackChanged:
+                        myForm.showSong(false);
+                        myForm.updateSongSettings();
+                        break;
+                    case NotificationType.VolumeLevelChanged:
+                        myForm.trackBar1_Set();
+                        break;
+                        /*case NotificationType.PlayerShuffleChanged: //this doesnt actually work rn because the checkboxes need to be updated
+                            myForm.shouldShuffle = mbApiInterface.Player_GetShuffle();
                             break;
-                    }
-                    break;
-                case NotificationType.TrackChanged:
-                    myForm.showSong(false);
-                    myForm.updateSongSettings();
-                    break;
-                case NotificationType.VolumeLevelChanged:
-                    myForm.trackBar1_Set();
-                    break;
-                /*case NotificationType.PlayerShuffleChanged: //this doesnt actually work rn because the checkboxes need to be updated
-                    myForm.shouldShuffle = mbApiInterface.Player_GetShuffle();
-                    break;
-                case NotificationType.PlayerRepeatChanged:
-                    myForm.shouldShuffle = mbApiInterface.Player_GetRepeat() == 0 ? true : false;
-                    break;*/
+                        case NotificationType.PlayerRepeatChanged:
+                            myForm.shouldShuffle = mbApiInterface.Player_GetRepeat() == 0 ? true : false;
+                            break;*/
+                }
             }
         }
 

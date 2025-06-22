@@ -34,6 +34,7 @@
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.DisplayHistoryCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.missedSongs = new System.Windows.Forms.Button();
             this.SampleRounds = new System.Windows.Forms.CheckBox();
             this.quizSwitch = new System.Windows.Forms.Button();
             this.chaseClassicB = new System.Windows.Forms.CheckBox();
@@ -228,6 +229,7 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.groupBox1.Controls.Add(this.missedSongs);
             this.groupBox1.Controls.Add(this.SampleRounds);
             this.groupBox1.Controls.Add(this.quizSwitch);
             this.groupBox1.Controls.Add(this.chaseClassicB);
@@ -269,6 +271,16 @@
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // missedSongs
+            // 
+            this.missedSongs.Location = new System.Drawing.Point(666, 254);
+            this.missedSongs.Name = "missedSongs";
+            this.missedSongs.Size = new System.Drawing.Size(162, 31);
+            this.missedSongs.TabIndex = 34;
+            this.missedSongs.Text = "Missed Playlist";
+            this.missedSongs.UseVisualStyleBackColor = true;
+            this.missedSongs.Click += new System.EventHandler(this.missedSongs_Click);
             // 
             // SampleRounds
             // 
@@ -817,7 +829,7 @@
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 50;
+            this.timer1.Interval = 15;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // HintPicture
@@ -825,7 +837,7 @@
             this.HintPicture.Location = new System.Drawing.Point(348, 141);
             this.HintPicture.Name = "HintPicture";
             this.HintPicture.Size = new System.Drawing.Size(500, 500);
-            this.HintPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.HintPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.HintPicture.TabIndex = 33;
             this.HintPicture.TabStop = false;
             // 
@@ -950,6 +962,7 @@
         public System.Windows.Forms.Button quizSwitch;
         public System.Windows.Forms.PictureBox HintPicture;
         public System.Windows.Forms.CheckBox SampleRounds;
+        public System.Windows.Forms.Button missedSongs;
     }
 
 

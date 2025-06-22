@@ -175,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="grandmaJenkins.ico" />
+    <None Include="Resources\spr_tenna_dance_cabbage_big.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
