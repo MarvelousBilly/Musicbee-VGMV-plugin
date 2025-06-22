@@ -81,6 +81,7 @@ namespace MusicBeePlugin {
                     v.framesWithAudio = -1000; //to note to not keep pausing
                 }
                 else if (e.KeyCode == Keys.H) { //restart song
+                    v.havePaused = false;
                     if (v.sampleRounds) {
                         double perc = v.lastPerc;
                         int duration = v.mApi.NowPlaying_GetDuration();
@@ -156,8 +157,31 @@ namespace MusicBeePlugin {
                 if (e.KeyCode == Keys.Down || e.KeyCode == Keys.K || e.KeyCode == Keys.S) { //skip song
                     v.mApi.Player_PlayNextTrack();
                 }
-                else if (e.KeyCode == Keys.Space || e.KeyCode == Keys.M) {
+                else if (e.KeyCode == Keys.Space || e.KeyCode == Keys.M) { //pause
                     v.mApi.Player_PlayPause();
+                }
+                else if (e.KeyCode == Keys.H) { //restart song
+                    v.havePaused = false;
+                    if (v.sampleRounds) {
+                        double perc = v.lastPerc;
+                        int duration = v.mApi.NowPlaying_GetDuration();
+                        int startAt = (int)(perc * duration);
+                        if (v.codlyToggle) {
+                            v.mApi.Player_SetVolume(v.vol);
+                        }
+                        v.framesWithAudio = 0;
+                        v.mApi.Player_SetPosition(startAt);
+                        if (v.mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
+                            v.mApi.Player_PlayPause();
+                        }
+                    }
+                    else {
+                        v.framesWithAudio = 0;
+                        v.mApi.Player_SetPosition(0);
+                        if (v.mApi.Player_GetPlayState() == Plugin.PlayState.Paused) {
+                            v.mApi.Player_PlayPause();
+                        }
+                    }
                 }
             }
 

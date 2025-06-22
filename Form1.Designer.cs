@@ -829,7 +829,7 @@
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 50;
+            this.timer1.Interval = 15;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // HintPicture
@@ -837,7 +837,7 @@
             this.HintPicture.Location = new System.Drawing.Point(348, 141);
             this.HintPicture.Name = "HintPicture";
             this.HintPicture.Size = new System.Drawing.Size(500, 500);
-            this.HintPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.HintPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.HintPicture.TabIndex = 33;
             this.HintPicture.TabStop = false;
             // 
