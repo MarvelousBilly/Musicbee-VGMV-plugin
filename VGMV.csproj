@@ -165,9 +165,6 @@
     <None Include="Resources\alienDance.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\alienDanceFast.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Agony.png" />
   </ItemGroup>
   <ItemGroup>

@@ -592,12 +592,12 @@ namespace MusicBeePlugin {
 
             if (pictureBox2.Visible) {
 
-                if (ticks % 4 == 1) {
+                if (ticks % 10 == 1) {
                     Dcolons.Add(new bouncingImage());
                 }
 
                 for (int j = 0; j < Dcolons.Count; j++) {
-                    Dcolons[j].tick(50);
+                    Dcolons[j].tick(timer1.Interval);
                     if (Dcolons[j].y > 500) {
                         Dcolons.Remove(Dcolons[j]);
                     }
