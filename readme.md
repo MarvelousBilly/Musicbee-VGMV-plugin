@@ -1,6 +1,8 @@
 ﻿To install: Edit preferences -> plugins -> add plugin -> select the dll file you installed
 Then, in the Musicbee text at the top, click tools and there will be a "Start VGMV"
 
+Make sure the setting in "Preferences/Now Playing" called "Clear playing tracks list and current playing track on restart" is **DISABLED**. 
+Enabling this will cause MusicBee to be inoperable until restarted via the Task Manager.
 
 ---------Controls---------
 * W or I to show the track (pauses the timer)
