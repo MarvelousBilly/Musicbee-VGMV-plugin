@@ -34,6 +34,8 @@
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.DisplayHistoryCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
             this.missedSongs = new System.Windows.Forms.Button();
             this.SampleRounds = new System.Windows.Forms.CheckBox();
             this.quizSwitch = new System.Windows.Forms.Button();
@@ -85,6 +87,7 @@
             this.HintPicture = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.BufferedPanel();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -229,6 +232,8 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.numericUpDown3);
             this.groupBox1.Controls.Add(this.missedSongs);
             this.groupBox1.Controls.Add(this.SampleRounds);
             this.groupBox1.Controls.Add(this.quizSwitch);
@@ -271,6 +276,32 @@
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(866, 258);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(202, 22);
+            this.label10.TabIndex = 36;
+            this.label10.Text = "Classic Pushback Time";
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.DecimalPlaces = 2;
+            this.numericUpDown3.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.numericUpDown3.Location = new System.Drawing.Point(1074, 256);
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(89, 27);
+            this.numericUpDown3.TabIndex = 35;
+            this.numericUpDown3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDown3.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numericUpDown3.ValueChanged += new System.EventHandler(this.numericUpDown3_ValueChanged_1);
             // 
             // missedSongs
             // 
@@ -884,6 +915,7 @@
             this.Load += new System.EventHandler(this.VGMV_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
@@ -963,6 +995,8 @@
         public System.Windows.Forms.PictureBox HintPicture;
         public System.Windows.Forms.CheckBox SampleRounds;
         public System.Windows.Forms.Button missedSongs;
+        public System.Windows.Forms.Label label10;
+        public System.Windows.Forms.NumericUpDown numericUpDown3;
     }
 
 

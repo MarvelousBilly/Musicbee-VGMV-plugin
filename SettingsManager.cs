@@ -36,6 +36,7 @@ namespace MusicBeePlugin
         public bool SampleRounds { get; set; }
         public int SampleDelay { get; set; }
         public bool CodlyToggle { get; set; }
+        public int PushbackTime { get; set; }
 
 
         public void SaveSettings()
@@ -64,6 +65,7 @@ namespace MusicBeePlugin
                 writer.WriteLine($"SampleRounds={SampleRounds}");
                 writer.WriteLine($"SampleDelay={SampleDelay}");
                 writer.WriteLine($"CodlyToggle={CodlyToggle}");
+                writer.WriteLine($"PushbackTime={PushbackTime}");
             }
         }
 
@@ -132,6 +134,7 @@ namespace MusicBeePlugin
             SampleRounds = false;
             SampleDelay = 500;
             CodlyToggle = false;
+            PushbackTime = 30000;
             SaveSettings();
         }
 
@@ -232,6 +235,9 @@ namespace MusicBeePlugin
                                     break;
                                 case "CodlyToggle":
                                     CodlyToggle = LoadBool(value);
+                                    break;
+                                case "PushbackTime":
+                                    PushbackTime = LoadInt(value);
                                     break;
                             }
                         }

@@ -111,6 +111,9 @@ namespace MusicBeePlugin {
         public int player; //starting player
         public bool GAMEOVER = false;
 
+        public int pushbackTimer;
+        public int pushbackTimeAllowed = 30000;
+
         public bool shouldLoop = true;
         public bool shouldShuffle = true;
         public bool singlePlayer = false;
@@ -139,6 +142,8 @@ namespace MusicBeePlugin {
 
         public double lastPerc = 0.0;
         public int framesWithAudio = 0;
+
+        
 
         private Pen pen = new Pen(Color.FromArgb(170, 245, 245, 245), 2); // Change color and width as needed
         Pen transPen = new Pen(Color.FromArgb(170, 0, 0, 0), 4);
@@ -357,6 +362,9 @@ namespace MusicBeePlugin {
                 sampleDelay = _settingsManager.SampleDelay;
                 codlyToggle = _settingsManager.CodlyToggle;
 
+                pushbackTimeAllowed = _settingsManager.PushbackTime;
+                numericUpDown3.Value = pushbackTimeAllowed / 1000;
+
                 if (showHistory) {
                     listBox1.Show();
                     listBox2.Show();
@@ -428,6 +436,16 @@ namespace MusicBeePlugin {
             if (P2Sec < 10) { P2Seconds = "0" + P2Sec.ToString(); }
             updateText(TimerP1, P1Min.ToString() + ":" + P1Seconds);
             updateText(TimerP2, P2Min.ToString() + ":" + P2Seconds);
+
+            if(chaseClassic && ChaseClassic.pushback && ChaseClassic.pushbackTimer != null) {
+                int PushMin = (int)Math.Ceiling(pushbackTimer / 1000.0) / 60;
+                int PushSec = (int)Math.Ceiling(pushbackTimer / 1000.0) % 60;
+
+                string PushSeconds = PushSec.ToString();
+                if (PushSec < 10) { PushSeconds = "0" + PushSec.ToString(); }
+                songName.Visible = true;
+                updateText(songName, PushMin.ToString() + ":" + PushSeconds);
+            }
         }
 
         public void updateColors() {
@@ -578,8 +596,8 @@ namespace MusicBeePlugin {
             ticks++; //ticks since start
 
             int arrayLen = images.Length - 1;
-
             String bpms = mApi.NowPlaying_GetFileTag(Plugin.MetaDataType.BeatsPerMin);
+
 
             float bpmf = 133.0f;
             if(bpms.Length >= 2) {
@@ -689,6 +707,9 @@ namespace MusicBeePlugin {
                 HintPicture.Hide();
                 shouldCountTime = false;
                 havePaused = false;
+                if (ChaseClassic.pushback && ChaseClassic.pushbackTimer != null) {
+                    ChaseClassic.pushbackTimer = null;
+                }
             }
 
             if (!showBoxes && !GAMEOVER) { //dont update if game is not over, and hide the game 
@@ -1408,6 +1429,12 @@ namespace MusicBeePlugin {
 
         private void missedSongs_Click(object sender, EventArgs e) {
             createPlaylist(listBox1);
+        }
+
+        private void numericUpDown3_ValueChanged_1(object sender, EventArgs e) {
+            pushbackTimeAllowed = (int)(numericUpDown3.Value * 1000);
+            _settingsManager.PushbackTime = pushbackTimeAllowed;
+            _settingsManager.SaveSettings();
         }
     }
 

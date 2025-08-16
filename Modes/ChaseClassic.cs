@@ -20,6 +20,7 @@ namespace MusicBeePlugin {
         bool check = false;
         int pointGaint = 0;
         int p2PointGaint = 0;
+        public System.Diagnostics.Stopwatch pushbackTimer;
 
         public void start() {
             //string startingSong = mApi.NowPlayingList_GetListFileUrl(0); //gets current song
@@ -43,7 +44,6 @@ namespace MusicBeePlugin {
                 v.mApi.Player_SetShuffle(false);
                 v.mApi.Player_SetPosition(0);
             }
-
 
             //shuffleList();
             v.player = 1;
@@ -142,6 +142,8 @@ namespace MusicBeePlugin {
 
         }
 
+
+
         public void incPoints(int pointGain) {
             if (v.player == 1 && !pushback) {
                 v.TimerP1.Font = v.biggerFont;
@@ -179,6 +181,10 @@ namespace MusicBeePlugin {
                 if(pointGain != 2 && p1Done) {
                     p2PointGaint = pointGain;
                     v.player = 1;
+
+                    pushbackTimer = System.Diagnostics.Stopwatch.StartNew();
+                    v.pushbackTimer = 30000; //30 seconds
+
                     pushback = true;
 
                     if (v.mApi.Player_GetPlayState() == Plugin.PlayState.Playing) {
@@ -332,6 +338,18 @@ namespace MusicBeePlugin {
         public void gameOverCheck(bool quickEnd) {
             int A = v.mApi.Player_GetPosition(); //song playlength in ms
             //TODO dont count time if the start of the song is silent (until its playing audio duh)
+            if (pushbackTimer != null) {
+                if (v.pushbackTimer > 0) {
+                    v.pushbackTimer = v.pushbackTimeAllowed - (int)pushbackTimer.ElapsedMilliseconds;
+                }
+                if (v.pushbackTimer <= 0) {
+                    v.pushbackTimer = 0;
+                    pushbackTimer.Stop();
+                    pushbackTimer = null;
+                    v.showSong(true);
+                }
+            }
+
             if (A <= 700) {
                 A = 0;
             }
