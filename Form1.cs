@@ -230,6 +230,8 @@ namespace MusicBeePlugin {
             chaseClassicB.Font =            mFont12;
             SampleRounds.Font =             mFont12;
             missedSongs.Font =              mFont12;
+            label10.Font =                  mFont12;
+            numericUpDown3.Font =           mFont12;
 
             //Fonts now no longer need to be set in Form1.Designer.cs -- they are set here instead.
             //The sizing of other elements though depends on the DPI scaling of the computer you are editing on??
