@@ -333,8 +333,8 @@ namespace MusicBeePlugin {
                 v.P1TimeAtNew = v.timeP1;
                 v.P2TimeAtNew = v.timeP2;
             }
-
         }
+
         public void gameOverCheck(bool quickEnd) {
             int A = v.mApi.Player_GetPosition(); //song playlength in ms
             //TODO dont count time if the start of the song is silent (until its playing audio duh)
@@ -345,8 +345,7 @@ namespace MusicBeePlugin {
                 if (v.pushbackTimer <= 0) {
                     v.pushbackTimer = 0;
                     pushbackTimer.Stop();
-                    pushbackTimer = null;
-                    v.showSong(true);
+                    //v.showSong(true);
                 }
             }
 

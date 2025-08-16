@@ -445,6 +445,9 @@ namespace MusicBeePlugin {
                 if (PushSec < 10) { PushSeconds = "0" + PushSec.ToString(); }
                 songName.Visible = true;
                 updateText(songName, PushMin.ToString() + ":" + PushSeconds);
+                if(pushbackTimer <= 0) {
+                    ChaseClassic.pushbackTimer = null;
+                }
             }
         }
 
